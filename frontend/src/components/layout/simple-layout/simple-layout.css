@@ -1,0 +1,95 @@
+.background {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--code-bg);
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: transparent;
+    z-index: 2;
+}
+
+.layout-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.left-bar, .right-bar {
+    padding: 16px;
+    background-color: transparent;
+    height: 100%;
+    z-index: 1;
+    overflow: auto;
+    flex-shrink: 0; /* Impede que o flexbox esmague as barras */
+}
+
+.main-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: #1e1e24; 
+    border-radius: 16px; 
+    overflow: hidden; 
+}
+
+.main-window {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.resizable-footer {
+    padding: 16px;
+    overflow: auto;
+    flex-shrink: 0;
+    background-color: var(--border);
+}
+
+/* ========================================================
+   ESTILOS DOS PUXADORES ESTILO ENGINE (MUDANÇA DE CURSOR)
+   ======================================================== */
+
+/* Puxador entre as colunas laterais e o centro */
+.resizer-horizontal {
+    height: 98%;
+    margin-top: 0.5%;
+    width: 5px;               /* Largura da área de clique */
+    cursor: ew-resize;        /* Símbolo do mouse de setas para os lados (<->) */
+    transition: background 0.2s;
+    z-index: 10;
+}
+.resizer-horizontal:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Dá um feedback sutil quando passa o mouse */
+}
+
+/* Puxador acima do footer */
+.resizer-vertical {
+    height: 6px;              /* Altura da área de clique */
+    cursor: ns-resize;        /* Símbolo do mouse de setas para cima/baixo */
+    border-top: 1px solid var(--border); /* Substitui a borda antiga por uma linha interativa */
+    transition: background 0.2s;
+    z-index: 10;
+}
+.resizer-vertical:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+button {
+    padding: 2px;
+    background-color: transparent;
+    border: 1px solid var(--accent-bg);
+    box-shadow: var(--accent-bg) 1px 1px 1px 1px;
+    border-radius: 4px;
+    min-width: 80px;
+} 

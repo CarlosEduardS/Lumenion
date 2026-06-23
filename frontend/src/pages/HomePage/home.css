@@ -1,0 +1,16 @@
+
+.button-group {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    flex-grow: 0;
+}
+
+h2 {
+    flex-grow: 1;
+    margin-right: 200px;
+}
+
+.right-button {
+    margin-right: 20px;
+}
