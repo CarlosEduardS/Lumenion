@@ -8,9 +8,19 @@
 
 h2 {
     flex-grow: 1;
-    margin-right: 200px;
+    margin-right: 160px;
 }
 
 .right-button {
     margin-right: 20px;
+}
+
+.left-bar > button {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+    box-shadow: 0 1px 1px var(--accent-border);
+}
+
+.left-bar > button:hover {
+    filter: brightness(1.2);
 }

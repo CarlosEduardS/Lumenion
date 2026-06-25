@@ -1,7 +1,16 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout'
 import './home.css'
 
+function ImportProject() {
+  
+}
+
 export default function HomePage() {
+  const [project, serProject] = useState([])
+
   return (
     <SimpleLayout
       HeaderContent={
@@ -16,13 +25,7 @@ export default function HomePage() {
         </>
       }
       LeftContent={
-        <div className="home-left">
-          <p>Menu de Navegação</p>
-          <ul>
-            <li>Dashboard</li>
-            <li>Configurações</li>
-          </ul>
-        </div>
+        <button onClick={ImportProject}>Importar</button>
       }
       MainContent={
         <div className="home-main">
