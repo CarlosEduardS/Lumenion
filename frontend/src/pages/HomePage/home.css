@@ -1,14 +1,29 @@
-
 .button-group {
     display: flex;
     flex-direction: row;
-    gap: 6px;
-    flex-grow: 0;
+    gap: 4px;
+    transform: translateY(2px); 
+}
+
+.button-group button.active-tab {
+    background-color: #1e1e24; /* 💡 IMPORTANTE: Tem que ser exatamente a mesma cor de fundo da sua .main-body ou da barra aberta! */
+    border: 1px solid rgba(84, 21, 157, 0.865);
+    border-bottom: 1px solid #1e1e24; /* 🪄 TRUQUE: A borda de baixo vira da cor do fundo, "abrindo" o botão */
+    
+    /* Arredonda apenas os cantos de cima, deixando a base reta para emendar */
+    border-radius: 4px 4px 0 0; 
+    
+    box-shadow: none; /* Remove o brilho de baixo para não cortar a emenda */
+    position: relative;
+    z-index: 3; /* Garante que ele fique por cima da linha do header */
+    
+    /* Move o botão ligeiramente 1px para baixo para morder e cobrir a borda do layout */
+    transform: translateY(4px); 
 }
 
 h2 {
     flex-grow: 1;
-    margin-right: 160px;
+    margin-right: 100px;
 }
 
 .right-button {
@@ -23,4 +38,76 @@ h2 {
 
 .left-bar > button:hover {
     filter: brightness(1.2);
+}
+
+/* Container que envelopa os grupos dentro da left-bar */
+.left-sidebar-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 170px;
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Quando a barra pai estiver ativa, o conteúdo aparece */
+.left-bar.active .left-sidebar-container {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Efeito fade-in rápido para os grupos internos individuais */
+.animate-fade-in {
+    animation: fadeInInternal 0.15s ease-in-out forwards;
+}
+
+@keyframes fadeInInternal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Destaque visual roxo para o botão da aba que está aberta */
+.button-group button.active-tab {
+    background-color: rgba(119, 0, 255, 0.35);
+    border-color: rgb(135, 47, 235);
+    box-shadow: 0 0 4px rgb(135, 47, 235);
+}
+
+/* Faz com que qualquer botão dentro dos grupos da barra lateral estique 100% */
+.left-sidebar-container * {
+    width: 100%;       /* Força o botão a ocupar toda a largura disponível (200px) */
+    box-sizing: border-box; /* Garante que as bordas e paddings não façam o botão passar do limite */
+    margin-bottom: 8px; /* Dá um espacinho opcional embaixo se você adicionar mais botões depois */
+    padding: 6px;      /* Aumenta um pouco a área de clique para parecer mais com uma engine */
+}
+
+.home-main {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.main-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.projects p {
+    flex-grow: 0.9;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.buttons button {
+    background-color: var(--code-bg);
+    border-radius: 8px;
+    border-color: var(--bg);
+    box-shadow: 0 1px 1px var(--bg);
 }

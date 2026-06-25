@@ -1,0 +1,12 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    background-color: var(--border);
+    backdrop-filter: blur(8px);
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    border-radius: 8px;
+}

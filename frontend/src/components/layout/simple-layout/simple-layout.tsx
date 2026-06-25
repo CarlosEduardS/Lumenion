@@ -64,12 +64,25 @@ export default function SimpleLayout({ HeaderContent, LeftContent, RightContent,
       <div className="layout-body">
         
         {/* Barra Esquerda */}
-        <aside className="left-bar" style={{ width: leftWidth }}>
+        <aside 
+          className={`left-bar ${
+            // Verifica se o LeftContent atual possui a string "active" nas suas classes
+            (LeftContent as any)?.props?.className?.includes('active') ? 'active' : ''
+          }`} 
+          style={
+            // Só aplica a largura do puxador se a barra estiver ativa. 
+            // Se estiver fechada, deixa o CSS controlar o 0px.
+            (LeftContent as any)?.props?.className?.includes('active') 
+              ? { width: leftWidth } 
+              : {}
+          }
+        >
           {LeftContent}
         </aside>
         
-        {/* Puxador da Esquerda */}
-        <div className="resizer-horizontal" onMouseDown={startResize('left')} />
+        {(LeftContent as any)?.props?.className?.includes('active') && (
+          <div className="resizer-horizontal" onMouseDown={startResize('left')} />
+        )}
 
         {/* Corpo Central */}
         <div className="main-body">

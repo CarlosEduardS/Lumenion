@@ -1,36 +1,97 @@
-import { useBridge } from '../../hooks/useBridge';
+import { useState } from 'react';
+import { useBridge } from '../../hooks/useBridge'; // Importando do arquivo original de hooks
+import SimpleLayout from '../../components/layout/simple-layout/simple-layout';
+import './home.css';
+import ProjectCard from '../../components/project-card/project-card';
 
-import SimpleLayout from '../../components/layout/simple-layout/simple-layout'
-import './home.css'
+// Tipo para controlar qual aba está ativa (ou null se estiver fechada)
+type ActiveGroup = 'files' | 'extension' | null;
 
 export default function HomePage() {
-  const { importProject } = useBridge();
+  // Estado para gerenciar qual grupo está ativo na aba esquerda
+  const [activeGroup, setActiveGroup] = useState<ActiveGroup>(null);
+  
+  // Extraindo os dois métodos de dentro do seu useBridge
+  const { SelectLightFile, ExportLightFile } = useBridge();
 
-  const handleImport = async () => {
-      const result = await importProject("C:/meu/projeto");
-      console.log(result);
+  // Função para alternar as abas. Se clicar no botão que já está aberto, ele fecha.
+  const handleTradeGroup = (group: ActiveGroup) => {
+    if (activeGroup === group) {
+      setActiveGroup(null); // Fecha o painel lateral
+    } else {
+      setActiveGroup(group); // Abre o painel correspondente
+    }
+  };
+
+  const handleImportarProjeto = async () => {
+    const resultado = await SelectLightFile();
+    console.log(resultado); 
+  };
+
+  const handleExportProject = async (project: any) => {
+    const resultado = await ExportLightFile(project);
+    console.log(resultado);
   };
 
   return (
     <SimpleLayout
       HeaderContent={
         <>
-          <div className="button-group">
-            <button>Arquivos</button>
-            <button>Alguma</button>
-            <button>Coisa</button>
-          </div>
-          <h2>Lumenion</h2>
-          <button className='right-button'>Configuracões</button>
+        <div className="button-group">
+          <button 
+            className={activeGroup === 'files' ? 'active-tab' : ''} 
+            onClick={() => handleTradeGroup('files')}
+          >
+            Arquivos
+          </button>
+          <button 
+            className={activeGroup === 'extension' ? 'active-tab' : ''} 
+            onClick={() => handleTradeGroup('extension')}
+          >
+            Extensões
+          </button>
+        </div>
+        <h2>LUMENION</h2>
+        <button>Configuracões</button>
         </>
       }
       LeftContent={
-        <button onClick={handleImport}>Importar</button>
+        /* O container detecta se há algum grupo ativo para disparar a transição do CSS */
+        <div className={`left-sidebar-container ${activeGroup ? 'active' : ''}`}>
+          {activeGroup === 'files' && (
+            <div className="files_group animate-fade-in">
+              <button onClick={handleExportProject}>Exportar</button>
+            </div>
+          )}
+          {activeGroup === 'extension' && (
+            <div className="extension_group animate-fade-in">
+              <input type="search" placeholder='Nome da extensão'/>
+              <button>Gerenciar</button>
+            </div>
+          )}
+        </div>
       }
       MainContent={
         <div className="home-main">
-          <h1>Bem-vindo ao Lumenion</h1>
-          <p>Este é o conteúdo principal da sua página.</p>
+          <div className="main-buttons">
+            <button>Criar</button>
+            <button onClick={handleImportarProjeto}>Importar</button>
+          </div>
+          <div className="projects">
+            <ProjectCard
+              HTML={
+                <>
+                  <img src="" alt="Capa do Projeto" />
+                  <h4>Nome do projeto</h4>
+                  <p>Informacoes do projeto</p>
+                  <div className="buttons">
+                    <button>Editar</button>
+                    <button>Configurar</button>
+                  </div>
+                </>
+              }
+            />
+          </div>
         </div>
       }
       RightContent={
@@ -45,5 +106,5 @@ export default function HomePage() {
         </div>
       }
     />
-  )
+  );
 }
