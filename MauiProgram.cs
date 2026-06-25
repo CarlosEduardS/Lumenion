@@ -15,6 +15,7 @@ namespace Lumenion
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<EngineService>();
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();

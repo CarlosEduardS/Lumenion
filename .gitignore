@@ -1,6 +1,6 @@
 # --- .NET / MAUI Ignored Files ---
 bin/
-obj/
+*obj/
 *.user
 
 # --- Node / React Ignored Files ---

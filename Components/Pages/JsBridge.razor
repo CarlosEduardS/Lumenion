@@ -1,0 +1,14 @@
+@page "/bridge"
+@inject IJSRuntime JS
+@inject EngineService Engine
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Expõe o assembly pro JS poder chamar os métodos [JSInvokable]
+            await JS.InvokeVoidAsync("eval", "window.__blazorReady = true");
+        }
+    }
+}

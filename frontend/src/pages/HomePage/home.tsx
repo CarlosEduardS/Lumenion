@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useBridge } from '../../hooks/useBridge';
 
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout'
 import './home.css'
 
-function ImportProject() {
-  
-}
-
 export default function HomePage() {
-  const [project, serProject] = useState([])
+  const { importProject } = useBridge();
+
+  const handleImport = async () => {
+      const result = await importProject("C:/meu/projeto");
+      console.log(result);
+  };
 
   return (
     <SimpleLayout
@@ -25,7 +25,7 @@ export default function HomePage() {
         </>
       }
       LeftContent={
-        <button onClick={ImportProject}>Importar</button>
+        <button onClick={handleImport}>Importar</button>
       }
       MainContent={
         <div className="home-main">
