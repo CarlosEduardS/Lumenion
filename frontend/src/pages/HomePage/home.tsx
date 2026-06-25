@@ -124,7 +124,13 @@ export default function HomePage() {
           </header>
           <div className="window-body">
             <div className="primery-place">
-              <video src="assets/gifs/image-.gif" width={40}></video>
+              <div className="animated-gif-container">
+                {/* Imagem estática (estará visível por padrão) */}
+                <img src="assets/gifs/image-static.png" alt="Preview estático" className="static-frame" />
+                
+                {/* Imagem animada (estará escondida por padrão) */}
+                <img src="assets/gifs/image-.gif" alt="Preview animado" className="active-gif" />
+              </div>
               <input type="text" placeholder='Qual vai ser o nome do projeto?' />
             </div>
             <button>hsadhgauh</button>
