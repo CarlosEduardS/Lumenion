@@ -3,6 +3,9 @@
 *obj/
 *.user
 
+bin/
+obj/
+
 # --- Node / React Ignored Files ---
 **/node_modules/
 **/dist/
