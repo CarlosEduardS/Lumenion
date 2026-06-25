@@ -1,18 +1,25 @@
 import { useState } from 'react';
-import { useBridge } from '../../hooks/useBridge'; // Importando do arquivo original de hooks
+import { IoCloseCircle } from 'react-icons/io5';
+import { useBridge } from '../../hooks/useBridge'; 
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout';
-import './home.css';
 import ProjectCard from '../../components/project-card/project-card';
+import WindowCard from '../../components/window-card/window-card';
+import './home.css';
 
-// Tipo para controlar qual aba está ativa (ou null se estiver fechada)
+
 type ActiveGroup = 'files' | 'extension' | null;
 
 export default function HomePage() {
   // Estado para gerenciar qual grupo está ativo na aba esquerda
   const [activeGroup, setActiveGroup] = useState<ActiveGroup>(null);
+  const [getWindow, setGetWindow] = useState<boolean>(false);
   
   // Extraindo os dois métodos de dentro do seu useBridge
   const { SelectLightFile, ExportLightFile } = useBridge();
+  
+  const toggleWindow = () => {
+    setGetWindow(!getWindow);
+  };
 
   // Função para alternar as abas. Se clicar no botão que já está aberto, ele fecha.
   const handleTradeGroup = (group: ActiveGroup) => {
@@ -34,6 +41,7 @@ export default function HomePage() {
   };
 
   return (
+    <>
     <SimpleLayout
       HeaderContent={
         <>
@@ -51,7 +59,7 @@ export default function HomePage() {
             Extensões
           </button>
         </div>
-        <h2>LUMENION</h2>
+        <h2 className='title'>LUMENION</h2>
         <button>Configuracões</button>
         </>
       }
@@ -60,7 +68,7 @@ export default function HomePage() {
         <div className={`left-sidebar-container ${activeGroup ? 'active' : ''}`}>
           {activeGroup === 'files' && (
             <div className="files_group animate-fade-in">
-              <button onClick={handleExportProject}>Exportar</button>
+              <button onClick={handleImportarProjeto}>Importar</button>
             </div>
           )}
           {activeGroup === 'extension' && (
@@ -74,8 +82,8 @@ export default function HomePage() {
       MainContent={
         <div className="home-main">
           <div className="main-buttons">
-            <button>Criar</button>
-            <button onClick={handleImportarProjeto}>Importar</button>
+            <button onClick={toggleWindow}>Criar</button>
+            <button onClick={handleExportProject}>Exportar</button>
           </div>
           <div className="projects">
             <ProjectCard
@@ -106,5 +114,25 @@ export default function HomePage() {
         </div>
       }
     />
+    {getWindow && (
+      <WindowCard
+        HTML={
+          <>
+          <header>
+            <h2>Criar um novo jogo</h2>
+            <button onClick={toggleWindow} className='close-button'><IoCloseCircle size={30} color="#c6c6c6" /></button>
+          </header>
+          <div className="window-body">
+            <div className="primery-place">
+              <video src="assets/gifs/image-.gif" width={40}></video>
+              <input type="text" placeholder='Qual vai ser o nome do projeto?' />
+            </div>
+            <button>hsadhgauh</button>
+          </div>
+          </>
+        }
+      />
+    )}
+    </>
   );
 }

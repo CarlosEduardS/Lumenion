@@ -126,8 +126,8 @@ body:has(.resizer-horizontal:active) .left-bar {
 button {
     min-width: 80px;
     background-color: transparent;
-    border: 1px solid rgba(84, 21, 157, 0.865);
-    box-shadow: 1px 1px 1px rgb(97, 21, 184);
+    border: 1px solid var(--accent);
+    box-shadow: 1px 1px 1px var(--accent);
     border-radius: 4px;
     padding: 4px;
 
@@ -135,5 +135,5 @@ button {
 }
 
 button:hover {
-    background-color: rgba(119, 0, 255, 0.158);
+    filter: brightness(1.6);
 }

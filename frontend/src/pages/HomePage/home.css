@@ -21,9 +21,9 @@
     transform: translateY(4px); 
 }
 
-h2 {
+.title {
     flex-grow: 1;
-    margin-right: 100px;
+    margin-right: 3%;
 }
 
 .right-button {
@@ -110,4 +110,22 @@ h2 {
     border-radius: 8px;
     border-color: var(--bg);
     box-shadow: 0 1px 1px var(--bg);
+}
+
+.buttons button:hover {
+    filter: brightness(1.4)
+}
+
+.close-button {
+    background-color: transparent;
+    min-width: auto;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 5px;
+}
+
+.window-body {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
 }
