@@ -1,0 +1,15 @@
+# --- .NET / MAUI Ignored Files ---
+bin/
+obj/
+*.user
+
+# --- Node / React Ignored Files ---
+**/node_modules/
+**/dist/
+**/.env*.local
+
+# --- IDEs e OS ---
+.vs/
+.vscode/
+.DS_Store
+Thumbs.db
