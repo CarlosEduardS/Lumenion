@@ -7,6 +7,7 @@ import WindowCard from '../../components/window-card/window-card';
 import './home.css';
 
 import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
+import { parseLightFile } from '../../services/decompress-light-file';
 
 type ActiveGroup = 'files' | 'extension' | null;
 
@@ -51,13 +52,50 @@ export default function HomePage() {
   };
 
   const handleImportarProjeto = async () => {
-    const resultado = await SelectLightFile();
-    console.log(resultado); 
+    try {
+      // 1. Chama o C# que abre o Explorer e lê o arquivo .light
+      const resultadoBruto = await SelectLightFile();
+      
+      // Se o usuário fechou o explorer ou deu erro
+      if (resultadoBruto === "Cancelado" || resultadoBruto.startsWith("Erro:")) {
+        console.log("Importação interrompida ou falhou:", resultadoBruto);
+        return;
+      }
+
+      console.log("Arquivo .light importado com sucesso! Iniciando parse...");
+
+      // 2. Roda o descompressor reverso na string bruta do arquivo
+      const dadosExtraidos = parseLightFile(resultadoBruto);
+
+      // 3. Monta o objeto do projeto no formato que o seu card espera
+      const projetoImportado: Project = {
+        id: dadosExtraidos.id,
+        image: "assets/pngs/image-static.png", // Imagem padrão (ou você pode mapear no futuro)
+        projectName: dadosExtraidos.name,
+        gameName: dadosExtraidos.info
+      };
+
+      // ==========================================
+      // 🔬 ÁREA DE TESTE: VEJA O CÓDIGO FONTE RESTAURADO
+      // ==========================================
+      console.group("🔓 PROJETO DESCOMPACTADO COM SUCESSO!");
+      console.log("ID do Projeto:", dadosExtraidos.id);
+      console.log("Nome:", dadosExtraidos.name);
+      console.log("Script Original Restaurado:\n", dadosExtraidos.rawScript);
+      console.groupEnd();
+      // ==========================================
+
+      // 4. Adiciona o novo card na lista do estado do React
+      setProjectsList((listaAtual) => [...listaAtual, projetoImportado]);
+
+    } catch (error) {
+      console.error("Erro ao processar a importação do arquivo:", error);
+    }
   };
 
   const handleExportProject = async (project: Project) => {
     try {
-      console.log("Iniciando exportação do projeto:", project.projectName);
+      // console.log("Iniciando exportação do projeto:", project.projectName);
 
       const dadosDoProjeto: ProjectTemplate = {
         ProjectID: project.id,
@@ -92,10 +130,10 @@ export default function HomePage() {
       // ==========================================
       // 🧪 ÁREA DE TESTE: VEJA NO CONSOLE DO NAVEGADOR
       // ==========================================
-      console.group("🔬 INSPEÇÃO DO ARQUIVO .LIGHT");
-      console.log("Nome do Arquivo final:", arquivoGerado.fileName);
-      console.log("Conteúdo Compactado Bruto:\n", arquivoGerado.content);
-      console.groupEnd();
+      // console.group("🔬 INSPEÇÃO DO ARQUIVO .LIGHT");
+      // console.log("Nome do Arquivo final:", arquivoGerado.fileName);
+      // console.log("Conteúdo Compactado Bruto:\n", arquivoGerado.content);
+      // console.groupEnd();
       // ==========================================
 
       // Executa a ponte do IPC (useBridge)

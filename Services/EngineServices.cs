@@ -1,12 +1,12 @@
 using Microsoft.Maui.Storage;
 using Microsoft.JSInterop;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using CommunityToolkit.Maui.Storage; // 🌟 Necessário para salvar arquivos de forma nativa
+using System.IO;
 
 namespace Lumenion;
 
-// Estrutura para receber o JSON mapeado do JS
 public class ExportPayload
 {
     [JsonPropertyName("name")]
@@ -38,7 +38,11 @@ public class EngineService
 
             if (resultado != null)
             {
-                return $"Sucesso: {resultado.FullPath}";
+                // 🌟 A MÁGICA NATIVA: Lê todo o conteúdo de texto do arquivo .light selecionado
+                string conteudoDoArquivo = await File.ReadAllTextAsync(resultado.FullPath, Encoding.UTF8);
+                
+                // Retornamos o conteúdo bruto diretamente para o JavaScript processar
+                return conteudoDoArquivo;
             }
 
             return "Cancelado";
@@ -54,31 +58,54 @@ public class EngineService
     {
         try
         {
-            // 1. Deserializa o payload recebido do JavaScript de forma segura
+            // 1. Deserializa o payload recebido do JavaScript
             var payload = dadosDoProjeto.Deserialize<ExportPayload>();
             if (payload == null || string.IsNullOrEmpty(payload.Content))
             {
                 return "Erro: Dados de exportação inválidos.";
             }
 
-            // 2. Converte a string criptografada/compactada em um Stream de Bytes
-            byte[] fileBytes = Encoding.UTF8.GetBytes(payload.Content);
-            using var stream = new MemoryStream(fileBytes);
+            string resultadoTxt = "Cancelado pelo usuário";
 
-            // 3. Abre a janela nativa do Windows Explorer ("Salvar Como")
-            // Passando o nome sugerido gerado pela sua aplicação (ex: meu-jogo.light)
-            var resultadoSalvar = await FileSaver.Default.SaveAsync(payload.Name, stream, CancellationToken.None);
-
-            if (resultadoSalvar.IsSuccessful)
+            // 2. Garante a execução na thread visual principal
+            await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                return $"Sucesso: Arquivo salvo em {resultadoSalvar.FilePath}";
-            }
+    #if WINDOWS
+                // Criando o seletor nativo do WinUI 3
+                var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+                
+                // 🌟 CRÍTICO para WinUI 3: Captura o ponteiro (handle) da janela ativa do MAUI
+                var window = Microsoft.Maui.Controls.Application.Current?.Windows[0].Handler?.PlatformView as Microsoft.UI.Xaml.Window;
+                if (window != null)
+                {
+                    var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                    WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandle);
+                }
 
-            return "Cancelado pelo usuário";
+                // Configurando as opções do arquivo
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                savePicker.FileTypeChoices.Add("Lumenion Light File", new System.Collections.Generic.List<string>() { ".light" });
+                savePicker.SuggestedFileName = payload.Name;
+
+                // Abre a janela nativa do Windows Explorer
+                var arquivoAlvo = await savePicker.PickSaveFileAsync();
+                
+                if (arquivoAlvo != null)
+                {
+                    // Escreve o texto compacto diretamente no arquivo escolhido
+                    await Windows.Storage.FileIO.WriteTextAsync(arquivoAlvo, payload.Content);
+                    resultadoTxt = $"Sucesso: Arquivo salvo em {arquivoAlvo.Path}";
+                }
+    #else
+                resultadoTxt = "Plataforma não suportada nativamente para salvar arquivos.";
+    #endif
+            });
+
+            return resultadoTxt;
         }
         catch (Exception ex)
         {
-            return $"Erro ao exportar: {ex.Message}";
+            return $"Erro interno no C#: {ex.Message}";
         }
     }
 }
