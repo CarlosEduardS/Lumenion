@@ -89,7 +89,7 @@ export default function HomePage() {
             <ProjectCard
               HTML={
                 <>
-                  <img src="" alt="Capa do Projeto" />
+                  <img src="assets/gifs/image-static.png" alt="Capa do Projeto" />
                   <h4>Nome do projeto</h4>
                   <p>Informacoes do projeto</p>
                   <div className="buttons">
@@ -125,11 +125,8 @@ export default function HomePage() {
           <div className="window-body">
             <div className="primery-place">
               <div className="animated-gif-container">
-                {/* Imagem estática (estará visível por padrão) */}
-                <img src="assets/gifs/image-static.png" alt="Preview estático" className="static-frame" />
-                
-                {/* Imagem animada (estará escondida por padrão) */}
-                <img src="assets/gifs/image-.gif" alt="Preview animado" className="active-gif" />
+                <img src="../../assets/gifs/image-static.png" alt="Preview estático" className="static-frame" />
+                <img src="../../../assets/gifs/image-.gif" alt="Preview animado" className="active-gif" />
               </div>
               <input type="text" placeholder='Qual vai ser o nome do projeto?' />
             </div>
