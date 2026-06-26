@@ -6,27 +6,47 @@ import ProjectCard from '../../components/project-card/project-card';
 import WindowCard from '../../components/window-card/window-card';
 import './home.css';
 
+import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
 
 type ActiveGroup = 'files' | 'extension' | null;
 
+// 💡 Definição do formato que cada projeto criado terá
+interface Project {
+  id: number;
+  image: string;
+  projectName: string;
+  gameName: string;
+}
+
 export default function HomePage() {
-  // Estado para gerenciar qual grupo está ativo na aba esquerda
   const [activeGroup, setActiveGroup] = useState<ActiveGroup>(null);
   const [getWindow, setGetWindow] = useState<boolean>(false);
   
-  // Extraindo os dois métodos de dentro do seu useBridge
+  // ⚡ Estados para armazenar os dados atuais do formulário de criação
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [InputGameName, setInputGameName] = useState<string>('');
+  const [InputInfo, setInputInfo] = useState<string>('');
+
+  // ⚡ Estado que guarda a lista de todos os projetos que você criou
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  
   const { SelectLightFile, ExportLightFile } = useBridge();
   
   const toggleWindow = () => {
     setGetWindow(!getWindow);
+    if (getWindow) {
+      // Limpa os campos ao fechar a janela
+      setSelectedImage(null);
+      setInputGameName('');
+      setInputInfo('');
+    }
   };
 
-  // Função para alternar as abas. Se clicar no botão que já está aberto, ele fecha.
   const handleTradeGroup = (group: ActiveGroup) => {
     if (activeGroup === group) {
-      setActiveGroup(null); // Fecha o painel lateral
+      setActiveGroup(null);
     } else {
-      setActiveGroup(group); // Abre o painel correspondente
+      setActiveGroup(group);
     }
   };
 
@@ -35,9 +55,89 @@ export default function HomePage() {
     console.log(resultado); 
   };
 
-  const handleExportProject = async (project: any) => {
-    const resultado = await ExportLightFile(project);
-    console.log(resultado);
+  const handleExportProject = async (project: Project) => {
+    try {
+      console.log("Iniciando exportação do projeto:", project.projectName);
+
+      const dadosDoProjeto: ProjectTemplate = {
+        ProjectID: project.id,
+        ImgUrl: project.image,
+        name: project.projectName,
+        info: project.gameName,
+        configProje: [
+          { IDdirect: project.id, pathNavigate: "root/project", configs: ["resolution=1920x1080", "vsync=true"] }
+        ],
+        configGame: [
+          { IDdirect: project.id, pathNavigate: "root/game", configs: ["gravity=9.8", "debugMode=false"] }
+        ],
+        scripts: [
+          { 
+            IDdirect: project.id, 
+            path: "src/main.as", 
+            script: 
+            "class Player {\n\tint id\n\tstring name\n\tfloat speed\n\tbool isActive\n\tList inventory\n\n\tfunction start() {\n\t\tif (true) {\n\t\t\tinput = 'Lumenion'\n\t\t} else if (false) {\n\t\t\tinput = null\n\t\t} else {\n\t\t\tinput = 'Empty'\n\t\t}\n\n\t\twhile (isActive) {\n\t\t\tfor (int i = 0; i < 10; i++) {\n\t\t\t\tswitch (case) {\n\t\t\t\t\treturn true\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+          }
+        ],
+        metaData: {
+          version: "1.0.0",
+          lastModified: Date.now(),
+          author: "Developer",
+          targetPlatform: "desktop"
+        }
+      };
+
+      // Executa a conversão
+      const arquivoGerado = ConvertToFile(dadosDoProjeto);
+
+      // ==========================================
+      // 🧪 ÁREA DE TESTE: VEJA NO CONSOLE DO NAVEGADOR
+      // ==========================================
+      console.group("🔬 INSPEÇÃO DO ARQUIVO .LIGHT");
+      console.log("Nome do Arquivo final:", arquivoGerado.fileName);
+      console.log("Conteúdo Compactado Bruto:\n", arquivoGerado.content);
+      console.groupEnd();
+      // ==========================================
+
+      // Executa a ponte do IPC (useBridge)
+      const resultadoBridge = await ExportLightFile({
+        name: arquivoGerado.fileName,
+        content: arquivoGerado.content
+      });
+      console.log("Resposta da Bridge:", resultadoBridge);
+
+    } catch (error) {
+      console.error("Falha ao exportar o arquivo do projeto:", error);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+    }
+  };
+
+  // ⚡ Função disparada ao clicar no botão "Criar Projeto"
+  const handleCreateProject = () => {
+    // Evita criar projetos sem nome
+    if (!InputGameName.trim()) {
+      alert("Por favor, digite o nome do projeto!");
+      return;
+    }
+
+    const novoProjeto: Project = {
+      id: Date.now(), // Gera um ID único simples usando o timestamp
+      image: selectedImage || "assets/pngs/image-static.png", // Imagem padrão caso não escolha nenhuma
+      projectName: InputGameName,
+      gameName: InputInfo || "Sem informações adicionais"
+    };
+
+    // Adiciona o novo projeto na lista existente
+    setProjectsList([...projectsList, novoProjeto]);
+
+    // Fecha a janela e limpa os campos
+    toggleWindow();
   };
 
   return (
@@ -64,7 +164,6 @@ export default function HomePage() {
         </>
       }
       LeftContent={
-        /* O container detecta se há algum grupo ativo para disparar a transição do CSS */
         <div className={`left-sidebar-container ${activeGroup ? 'active' : ''}`}>
           {activeGroup === 'files' && (
             <div className="files_group animate-fade-in">
@@ -83,22 +182,25 @@ export default function HomePage() {
         <div className="home-main">
           <div className="main-buttons">
             <button onClick={toggleWindow}>Criar</button>
-            <button onClick={handleExportProject}>Exportar</button>
           </div>
           <div className="projects">
-            <ProjectCard
+            {projectsList.map((project) => (
+              <ProjectCard
+              key={project.id}
               HTML={
                 <>
-                  <img src="/assets/gifs/image-static.png" alt="Capa do Projeto" />
-                  <h4>Nome do projeto</h4>
-                  <p>Informacoes do projeto</p>
+                  <img src={project.image} width={80} style={{ borderRadius: '6px', objectFit: 'cover' }} />
+                  <h4>{project.projectName}</h4>
+                  <p>{project.gameName}</p>
                   <div className="buttons">
-                    <button>Editar</button>
-                    <button>Configurar</button>
+                    <button>Abrir Projeto</button>
+                    <button>Editar Configuracões</button>
+                    <button onClick={() => handleExportProject(project)}>Exportar Projeto</button>
                   </div>
                 </>
-              }
-            />
+                }
+              />
+            ))}
           </div>
         </div>
       }
@@ -124,13 +226,29 @@ export default function HomePage() {
           </header>
           <div className="window-body">
             <div className="primery-place">
-              <div className="animated-gif-container">
-                <img src="/assets/gifs/image-static.png" alt="Preview estático" className="static-frame" />
-                <img src="/assets/gifs/image-.gif" alt="Preview animado" className="active-gif" />
+              <img src={selectedImage ? selectedImage : "assets/pngs/image-static.png"} width={120}/>
+              <div className="main-inputs">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                />
+                <input 
+                  type="text" 
+                  placeholder='Qual vai ser o nome do jogo?' 
+                  value={InputGameName}
+                  onChange={(e) => setInputGameName(e.target.value)}
+                />
+                <input 
+                  type="text" 
+                  placeholder='Fale um pouco mais sobre esse jogo' 
+                  value={InputInfo}
+                  onChange={(e) => setInputInfo(e.target.value)}
+                />
               </div>
-              <input type="text" placeholder='Qual vai ser o nome do projeto?' />
             </div>
-            <button>hsadhgauh</button>
+            {/* ⚡ Vincula a função ao botão do modal */}
+            <button onClick={handleCreateProject}>Criar Projeto</button>
           </div>
           </>
         }

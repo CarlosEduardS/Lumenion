@@ -1,11 +1,23 @@
 using Microsoft.Maui.Storage;
 using Microsoft.JSInterop;
+using System.Text;
+using System.Text.Json.Serialization;
+using CommunityToolkit.Maui.Storage; // 🌟 Necessário para salvar arquivos de forma nativa
 
 namespace Lumenion;
 
+// Estrutura para receber o JSON mapeado do JS
+public class ExportPayload
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("content")]
+    public string Content { get; set; } = string.Empty;
+}
+
 public class EngineService
 {
-    // O primeiro argumento do JSInvokable define o identificador exato que o JS vai procurar
     [JSInvokable("AbrirSelecionadorDeArquivo")]
     public static async Task<string> AbrirSelecionadorDeArquivo()
     {
@@ -38,13 +50,31 @@ public class EngineService
     }
 
     [JSInvokable("ExportarArquivoProjeto")]
-    public static async Task<string> ExportarArquivoProjeto(object dadosDoProjeto)
+    public static async Task<string> ExportarArquivoProjeto(System.Text.Json.JsonElement dadosDoProjeto)
     {
         try
         {
-            // Aqui você adicionaria a lógica usando o FolderPicker ou SaveFileDialog do MAUI 
-            // para salvar os dados recebidos em um arquivo físico .light
-            return "Sucesso: Projeto exportado!";
+            // 1. Deserializa o payload recebido do JavaScript de forma segura
+            var payload = dadosDoProjeto.Deserialize<ExportPayload>();
+            if (payload == null || string.IsNullOrEmpty(payload.Content))
+            {
+                return "Erro: Dados de exportação inválidos.";
+            }
+
+            // 2. Converte a string criptografada/compactada em um Stream de Bytes
+            byte[] fileBytes = Encoding.UTF8.GetBytes(payload.Content);
+            using var stream = new MemoryStream(fileBytes);
+
+            // 3. Abre a janela nativa do Windows Explorer ("Salvar Como")
+            // Passando o nome sugerido gerado pela sua aplicação (ex: meu-jogo.light)
+            var resultadoSalvar = await FileSaver.Default.SaveAsync(payload.Name, stream, CancellationToken.None);
+
+            if (resultadoSalvar.IsSuccessful)
+            {
+                return $"Sucesso: Arquivo salvo em {resultadoSalvar.FilePath}";
+            }
+
+            return "Cancelado pelo usuário";
         }
         catch (Exception ex)
         {
