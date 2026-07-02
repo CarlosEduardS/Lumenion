@@ -101,6 +101,11 @@
     gap: 10px;
 }
 
+hr {
+    width: 100%;
+    opacity: 0.05;
+}
+
 .projects p {
     flex-grow: 0.9;
 }
@@ -146,8 +151,7 @@
 }
 
 img {
-    background-color: white;
-    border-radius: 8px;
+    filter: invert(1);
 }
 
 .main-inputs {
@@ -210,4 +214,27 @@ img {
 .window-body input[type="file"]::file-selector-button:hover {
     background-color: var(--accent-bg);
     border-color: var(--accent-border);
+}
+
+.game-dimension-button {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.game-dimension-button button {
+    border: none;
+    box-shadow: none;
+}
+
+.game-dimension-button img {
+    background-color: transparent;
+    filter: invert(1);
+
+    transition: all 0.2s ease-in;
+}
+
+.game-dimension-button img:hover {
+    filter: brightness(0.5);
 }

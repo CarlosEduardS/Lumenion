@@ -6,7 +6,8 @@ import ProjectCard from '../../components/project-card/project-card';
 import WindowCard from '../../components/window-card/window-card';
 import './home.css';
 
-import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
+import ConvertToFile from '../../services/convert-light-file';
+import { type ProjectTemplate} from "../../services/replace-word";
 import { parseLightFile } from '../../services/decompress-light-file';
 
 type ActiveGroup = 'files' | 'extension' | null;
@@ -126,17 +127,7 @@ export default function HomePage() {
 
       // Executa a conversão
       const arquivoGerado = ConvertToFile(dadosDoProjeto);
-
-      // ==========================================
-      // 🧪 ÁREA DE TESTE: VEJA NO CONSOLE DO NAVEGADOR
-      // ==========================================
-      // console.group("🔬 INSPEÇÃO DO ARQUIVO .LIGHT");
-      // console.log("Nome do Arquivo final:", arquivoGerado.fileName);
-      // console.log("Conteúdo Compactado Bruto:\n", arquivoGerado.content);
-      // console.groupEnd();
-      // ==========================================
-
-      // Executa a ponte do IPC (useBridge)
+      
       const resultadoBridge = await ExportLightFile({
         name: arquivoGerado.fileName,
         content: arquivoGerado.content
@@ -176,6 +167,12 @@ export default function HomePage() {
 
     // Fecha a janela e limpa os campos
     toggleWindow();
+  };
+
+  const handleOpenProject = (project: Project) => {
+    const nextUrl = `/editor/${project.id}`;
+    window.history.pushState({}, '', nextUrl);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   return (
@@ -231,7 +228,7 @@ export default function HomePage() {
                   <h4>{project.projectName}</h4>
                   <p>{project.gameName}</p>
                   <div className="buttons">
-                    <button>Abrir Projeto</button>
+                    <button onClick={() => handleOpenProject(project)}>Abrir Projeto</button>
                     <button>Editar Configuracões</button>
                     <button onClick={() => handleExportProject(project)}>Exportar Projeto</button>
                   </div>
@@ -264,7 +261,7 @@ export default function HomePage() {
           </header>
           <div className="window-body">
             <div className="primery-place">
-              <img src={selectedImage ? selectedImage : "assets/pngs/image-static.png"} width={120}/>
+              <img src={selectedImage ? selectedImage : "assets/pngs/image-static.png"} width={120} height={120}/>
               <div className="main-inputs">
                 <input 
                   type="file" 
@@ -285,7 +282,20 @@ export default function HomePage() {
                 />
               </div>
             </div>
-            {/* ⚡ Vincula a função ao botão do modal */}
+            <hr/>
+            <div className="base-configs">
+              <div className="primery-place">
+                <div className="game-dimension-button">
+                  <button><img src="/assets/pngs/3d.png" width={100}/></button>
+                  <button><img src="/assets/pngs/2d.png" width={100}/></button>
+                </div>
+                <div className="main-inputs">
+                  <input type="text" />
+                  <input type="text" />
+                  <input type="text" />
+                </div>
+              </div>
+            </div>
             <button onClick={handleCreateProject}>Criar Projeto</button>
           </div>
           </>
