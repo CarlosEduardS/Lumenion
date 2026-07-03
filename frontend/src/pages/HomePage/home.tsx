@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import { IoCloseCircle } from 'react-icons/io5';
 import { useBridge } from '../../hooks/useBridge';
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout';
-import ProjectCard from '../../components/project-card/project-card';
 import WindowCard from '../../components/window-card/window-card';
 import './home.css';
+import './Header.css';
 
 import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
 import { parseLightFile } from '../../services/decompress-light-file';
 import {
   type StoredProject,
   type ProjectConfig,
-  type ProjectDimension,
-  type ScriptingMode,
   defaultProjectConfig,
   saveProject,
   getAllProjects,
 } from '../../services/project-store';
+
+import LeftBar from './sub-components/LeftBar/LeftBar';
+import MainContent from './sub-components/MainContent/MainContent';
+import CreateWindow from './sub-components/CreateWindows/CreateWindow';
 
 type ActiveGroup = 'files' | 'extension' | null;
 
@@ -108,7 +109,7 @@ export default function HomePage() {
 
   const handleOpenEditWindow = (project: StoredProject) => {
     setEditingProjectId(project.id);
-    setSelectedImage(project.image === 'assets/pngs/image-static.png' ? null : project.image);
+    setSelectedImage(project.image === '/assets/pngs/image-static.png' ? null : project.image);
     setInputGameName(project.gameName);
     setInputInfo(project.gameInfo);
     setConfig(project.config);
@@ -277,7 +278,7 @@ export default function HomePage() {
   return (
     <>
     <SimpleLayout
-      HeaderContent={
+      HeaderContent={{ isVisible: true, content: (
         <>
         <div className="button-group">
           <button 
@@ -296,196 +297,41 @@ export default function HomePage() {
         <h2 className='title'>LUMENION</h2>
         <button>Configuracões</button>
         </>
-      }
-      LeftContent={
-        <div className={`left-sidebar-container ${activeGroup ? 'active' : ''}`}>
-          {activeGroup === 'files' && (
-            <div className="files_group animate-fade-in">
-              <button onClick={handleImportarProjeto}>Importar</button>
-            </div>
-          )}
-          {activeGroup === 'extension' && (
-            <div className="extension_group animate-fade-in">
-              <input type="search" placeholder='Nome da extensão'/>
-              <button>Gerenciar</button>
-            </div>
-          )}
-        </div>
-      }
-      MainContent={
-        <div className="home-main">
-          <div className="main-buttons">
-            <button onClick={handleOpenCreateWindow}>Criar</button>
-          </div>
-          <div className="projects">
-            {projectsList.map((project) => (
-              <ProjectCard
-              key={project.id}
-              HTML={
-                <>
-                  <img src={project.image} width={80} style={{ borderRadius: '6px', objectFit: 'cover' }} />
-                  <h4>{project.gameName}</h4>
-                  <p>{project.gameInfo}</p>
-                  <span className="project-meta">
-                    {project.config.dimension} · {project.config.scriptingMode === 'csharp' ? 'C#' : 'Lumen Script'} · {project.config.resolutionWidth}x{project.config.resolutionHeight}
-                  </span>
-                  <div className="buttons">
-                    <button onClick={() => handleOpenProject(project)}>Abrir Projeto</button>
-                    <button onClick={() => handleOpenEditWindow(project)}>Editar Configuracões</button>
-                    <button onClick={() => handleExportProject(project)}>Exportar Projeto</button>
-                  </div>
-                </>
-                }
-              />
-            ))}
-          </div>
-        </div>
-      }
-      RightContent={
-        <div className="home-right">
-          <p>Painel Lateral Direito</p>
-          <span>Notificações ou Info adicionais</span>
-        </div>
-      }
-      FooterContent={
-        <div className="home-footer">
-          <p>Terminal</p>
-        </div>
-      }
+      ) }}
+      LeftContent={{ isVisible: !!activeGroup, content: (
+        <LeftBar
+          activeGroup={activeGroup}
+          handleImportarProjeto={handleImportarProjeto}
+        />
+      ) }}
+      MainContent={{ isVisible: true, content: (
+        <MainContent
+          projectsList={projectsList}
+          handleOpenCreateWindow={handleOpenCreateWindow}
+          handleOpenEditWindow={handleOpenEditWindow}
+          handleExportProject={handleExportProject}
+          handleOpenProject={handleOpenProject}
+        />
+      ) }}
+      RightContent={{ isVisible: false, content: (<></>)}}
+      FooterContent={{ isVisible: false, content: (<></>) }}
     />
     {getWindow && (
       <WindowCard
         HTML={
-          <>
-          <header>
-            <h2>{editingProjectId ? 'Editar projeto' : 'Criar um novo jogo'}</h2>
-            <button onClick={toggleWindow} className='close-button'><IoCloseCircle size={30} color="#c6c6c6" /></button>
-          </header>
-          <div className="window-body">
-            <div className="primery-place">
-              <img src={selectedImage ? selectedImage : "assets/pngs/image-static.png"} width={120} height={120}/>
-              <div className="main-inputs">
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleImageChange} 
-                />
-                <input 
-                  type="text" 
-                  placeholder='Qual vai ser o nome do jogo?' 
-                  value={InputGameName}
-                  onChange={(e) => setInputGameName(e.target.value)}
-                />
-                <input 
-                  type="text" 
-                  placeholder='Fale um pouco mais sobre esse jogo' 
-                  value={InputInfo}
-                  onChange={(e) => setInputInfo(e.target.value)}
-                />
-              </div>
-            </div>
-            <hr/>
-
-            <div className="base-configs">
-              <div className="config-section">
-                <span className="config-label">Dimensão</span>
-                <div className="game-dimension-button">
-                  <button
-                    type="button"
-                    className={config.dimension === '3D' ? 'selected' : ''}
-                    onClick={() => updateConfig('dimension', '3D' as ProjectDimension)}
-                  >
-                    <img src="/assets/pngs/3d.png" width={100}/>
-                  </button>
-                  <button
-                    type="button"
-                    className={config.dimension === '2D' ? 'selected' : ''}
-                    onClick={() => updateConfig('dimension', '2D' as ProjectDimension)}
-                  >
-                    <img src="/assets/pngs/2d.png" width={100}/>
-                  </button>
-                </div>
-              </div>
-
-              <div className="config-section">
-                <span className="config-label">Como você quer programar?</span>
-                <div className="toggle-group">
-                  <button
-                    type="button"
-                    className={`toggle-button ${config.scriptingMode === 'csharp' ? 'selected' : ''}`}
-                    onClick={() => updateConfig('scriptingMode', 'csharp' as ScriptingMode)}
-                  >
-                    C# Direto
-                  </button>
-                  <button
-                    type="button"
-                    className={`toggle-button ${config.scriptingMode === 'lumen' ? 'selected' : ''}`}
-                    onClick={() => updateConfig('scriptingMode', 'lumen' as ScriptingMode)}
-                  >
-                    Lumen Script
-                  </button>
-                </div>
-                <span className="config-hint">
-                  {config.scriptingMode === 'csharp'
-                    ? 'Acesso total à engine, sem abstração — para quem já manja C#.'
-                    : 'Linguagem simplificada, feita para aprender mais rápido.'}
-                </span>
-              </div>
-
-              <div className="config-section">
-                <span className="config-label">Resolução</span>
-                <div className="config-row">
-                  <input
-                    type="number"
-                    min={1}
-                    value={config.resolutionWidth}
-                    onChange={(e) => updateConfig('resolutionWidth', Number(e.target.value))}
-                  />
-                  <span className="config-separator">×</span>
-                  <input
-                    type="number"
-                    min={1}
-                    value={config.resolutionHeight}
-                    onChange={(e) => updateConfig('resolutionHeight', Number(e.target.value))}
-                  />
-                </div>
-              </div>
-
-              <div className="config-section">
-                <span className="config-label">Gravidade</span>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={config.gravity}
-                  onChange={(e) => updateConfig('gravity', Number(e.target.value))}
-                />
-              </div>
-
-              <div className="config-section checkbox-row">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={config.vsync}
-                    onChange={(e) => updateConfig('vsync', e.target.checked)}
-                  />
-                  VSync
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={config.debugMode}
-                    onChange={(e) => updateConfig('debugMode', e.target.checked)}
-                  />
-                  Debug Mode
-                </label>
-              </div>
-            </div>
-
-            <button onClick={handleSaveProject}>
-              {editingProjectId ? 'Salvar Alterações' : 'Criar Projeto'}
-            </button>
-          </div>
-          </>
+          <CreateWindow
+            editingProjectId={editingProjectId}
+            selectedImage={selectedImage}
+            InputGameName={InputGameName}
+            InputInfo={InputInfo}
+            config={config}
+            toggleWindow={toggleWindow}
+            handleImageChange={handleImageChange}
+            updateConfig={updateConfig}
+            handleSaveProject={handleSaveProject}
+            setInputGameName={setInputGameName}
+            setInputInfo={setInputInfo}
+          />
         }
       />
     )}

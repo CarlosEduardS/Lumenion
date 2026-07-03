@@ -1,0 +1,57 @@
+.left-sidebar-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 170px;
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.left-bar.active .left-sidebar-container {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.animate-fade-in {
+    animation: fadeInInternal 0.15s ease-in-out forwards;
+}
+
+@keyframes fadeInInternal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Faz com que qualquer botão dentro dos grupos da barra lateral estique 100% */
+.left-sidebar-container * {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+    padding: 6px;
+}
+
+.extension-item {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: var(--social-bg);
+    transition: all 0.2s ease;
+
+    height: 70px;
+    width: 100%;
+}
+
+/* Botões que ficam diretamente na barra esquerda (ex.: atalhos rápidos) */
+.left-bar > button {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+    box-shadow: 0 1px 1px var(--accent-border);
+}
+
+.left-bar > button:hover { filter: brightness(1.2) }

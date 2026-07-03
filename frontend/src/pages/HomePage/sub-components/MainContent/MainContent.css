@@ -1,0 +1,37 @@
+.home-main {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.main-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.projects {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.projects p {
+    flex-grow: 0.9;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.buttons button {
+    background-color: var(--code-bg);
+    border-radius: 8px;
+    border-color: var(--bg);
+    box-shadow: 0 1px 1px var(--bg);
+}
+
+.buttons button:hover { filter: brightness(1.4) }

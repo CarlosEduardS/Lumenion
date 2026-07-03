@@ -30,76 +30,19 @@
     margin-right: 20px;
 }
 
-.left-bar > button {
-    background-color: var(--accent-bg);
-    border-color: var(--accent-border);
-    box-shadow: 0 1px 1px var(--accent-border);
-}
-
-.left-bar > button:hover {
-    filter: brightness(1.2);
-}
+/* Regras movidas para sub-componentes: veja sub-components/*/ 
+.migrated-note { display:none }
 
 /* Container que envelopa os grupos dentro da left-bar */
-.left-sidebar-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 170px;
-    opacity: 0;
-    transform: translateX(-15px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-/* Quando a barra pai estiver ativa, o conteúdo aparece */
-.left-bar.active .left-sidebar-container {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* Efeito fade-in rápido para os grupos internos individuais */
-.animate-fade-in {
-    animation: fadeInInternal 0.15s ease-in-out forwards;
-}
-
-@keyframes fadeInInternal {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+/* Left bar internals moved to LeftBar.css */
 
 /* Destaque visual roxo para o botão da aba que está aberta */
-.button-group button.active-tab {
-    background-color: rgba(119, 0, 255, 0.35);
-    border-color: rgb(135, 47, 235);
-    box-shadow: 0 0 4px rgb(135, 47, 235);
-}
+/* Button-group active styles moved to Header.css */
 
 /* Faz com que qualquer botão dentro dos grupos da barra lateral estique 100% */
-.left-sidebar-container * {
-    width: 100%;       /* Força o botão a ocupar toda a largura disponível (200px) */
-    box-sizing: border-box; /* Garante que as bordas e paddings não façam o botão passar do limite */
-    margin-bottom: 8px; /* Dá um espacinho opcional embaixo se você adicionar mais botões depois */
-    padding: 6px;      /* Aumenta um pouco a área de clique para parecer mais com uma engine */
-}
+/* Generic left bar children sizing moved to LeftBar.css */
 
-.home-main {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-.main-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.projects {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+/* Main content styles moved to MainContent.css */
 
 hr {
     width: 100%;
@@ -116,31 +59,11 @@ hr {
     gap: 4px;
 }
 
-.buttons button {
-    background-color: var(--code-bg);
-    border-radius: 8px;
-    border-color: var(--bg);
-    box-shadow: 0 1px 1px var(--bg);
-}
+/* Buttons styling moved to shared component CSS */
 
-.buttons button:hover {
-    filter: brightness(1.4)
-}
+/* small utility moved */
 
-.close-button {
-    background-color: transparent;
-    min-width: auto;
-    border: none;
-    box-shadow: none;
-    margin-bottom: 5px;
-}
-
-.window-body {
-    padding: 50px;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-}
+/* Create window body moved to CreateWindow.css */
 
 .primery-place {
     display: flex;
@@ -151,32 +74,9 @@ hr {
     width: 100%;
 }
 
-img {
-    filter: invert(1);
-}
+/* Main inputs moved to CreateWindow.css */
 
-.main-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    flex-grow: 0.8;
-    width: 100px;
-}
-
-.window-body input[type="text"] {
-    width: 100%;
-    box-sizing: border-box;
-    font-family: var(--sans);
-    font-size: 15px;
-    padding: 10px 14px;
-    background-color: var(--code-bg); /* Fundo sutil */
-    color: var(--text-h); /* Texto claro */
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
+/* Text input styles moved to CreateWindow.css */
 
 /* Efeito de foco (quando o usuário clica para digitar) */
 .window-body input[type="text"]:focus {
@@ -185,44 +85,20 @@ img {
 }
 
 /* Customização do Placeholder (Texto interno de dica) */
-.window-body input[type="text"]::placeholder {
-    color: var(--text);
-    opacity: 0.6;
-}
+/* placeholder moved */
 
 /* Estilização do Input de Arquivo (File Upload) */
-.window-body input[type="file"] {
-    font-family: var(--sans);
-    font-size: 14px;
-    color: var(--text);
-}
+/* file input moved */
 
 /* Customização do botão interno do input de arquivo ("Procurar...") */
-.window-body input[type="file"]::file-selector-button {
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 500;
-    padding: 6px 12px;
-    background-color: var(--code-bg);
-    color: var(--text-h);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
+/* file selector moved */
 
 .window-body input[type="file"]::file-selector-button:hover {
     background-color: var(--accent-bg);
     border-color: var(--accent-border);
 }
 
-.game-dimension-button {
-    padding: 8px;
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-}
+/* game-dimension moved */
 
 .game-dimension-button button {
     border: none;
@@ -244,13 +120,7 @@ img {
    🆕 Config da janela de criação/edição de projeto
    ================================ */
 
-.base-configs {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 10px 0 20px;
-    text-align: left;
-}
+/* base-configs moved to CreateWindow.css */
 
 .config-section {
     display: flex;
@@ -336,11 +206,7 @@ img {
     filter: invert(1) drop-shadow(0 0 4px var(--accent));
 }
 
-.checkbox-row {
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
-}
+/* checkbox-row moved */
 
 .checkbox-row label {
     display: flex;
@@ -364,126 +230,4 @@ img {
     opacity: 0.7;
 }
 
-/* ================================
-   🆕 Config da janela de criação/edição de projeto
-   ================================ */
-
-.base-configs {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 10px 0 20px;
-    text-align: left;
-}
-
-.config-section {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.config-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-h);
-}
-
-.config-hint {
-    font-size: 12px;
-    color: var(--text);
-    opacity: 0.75;
-}
-
-.config-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-}
-
-.config-separator {
-    color: var(--text);
-    opacity: 0.6;
-}
-
-.base-configs input[type="number"] {
-    width: 100px;
-    box-sizing: border-box;
-    font-family: var(--sans);
-    font-size: 15px;
-    padding: 8px 12px;
-    background-color: var(--code-bg);
-    color: var(--text-h);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.base-configs input[type="number"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-bg);
-}
-
-.toggle-group {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-}
-
-.toggle-button {
-    flex: 1;
-    background-color: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: var(--text);
-    transition: all 0.15s ease;
-}
-
-.toggle-button:hover {
-    filter: brightness(1.15);
-}
-
-.toggle-button.selected {
-    background-color: var(--accent-bg);
-    border-color: var(--accent-border);
-    color: var(--text-h);
-    box-shadow: 0 0 4px var(--accent-border);
-}
-
-.game-dimension-button button.selected {
-    filter: none;
-}
-
-.game-dimension-button button.selected img {
-    filter: invert(1) drop-shadow(0 0 4px var(--accent));
-}
-
-.checkbox-row {
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
-}
-
-.checkbox-row label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: var(--text-h);
-    cursor: pointer;
-}
-
-.checkbox-row input[type="checkbox"] {
-    accent-color: var(--accent);
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.project-meta {
-    font-size: 12px;
-    color: var(--text);
-    opacity: 0.7;
-}
+/* extension-item moved to LeftBar.css */
