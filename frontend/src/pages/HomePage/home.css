@@ -139,6 +139,7 @@ hr {
     padding: 50px;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 .primery-place {
@@ -237,4 +238,252 @@ img {
 
 .game-dimension-button img:hover {
     filter: brightness(0.5);
+}
+
+/* ================================
+   🆕 Config da janela de criação/edição de projeto
+   ================================ */
+
+.base-configs {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 10px 0 20px;
+    text-align: left;
+}
+
+.config-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.config-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.config-hint {
+    font-size: 12px;
+    color: var(--text);
+    opacity: 0.75;
+}
+
+.config-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.config-separator {
+    color: var(--text);
+    opacity: 0.6;
+}
+
+.base-configs input[type="number"] {
+    width: 100px;
+    box-sizing: border-box;
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 8px 12px;
+    background-color: var(--code-bg);
+    color: var(--text-h);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.base-configs input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.toggle-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.toggle-button {
+    flex: 1;
+    background-color: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text);
+    transition: all 0.15s ease;
+}
+
+.toggle-button:hover {
+    filter: brightness(1.15);
+}
+
+.toggle-button.selected {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--text-h);
+    box-shadow: 0 0 4px var(--accent-border);
+}
+
+.game-dimension-button button.selected {
+    filter: none;
+}
+
+.game-dimension-button button.selected img {
+    filter: invert(1) drop-shadow(0 0 4px var(--accent));
+}
+
+.checkbox-row {
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+.checkbox-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-h);
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.project-meta {
+    font-size: 12px;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+/* ================================
+   🆕 Config da janela de criação/edição de projeto
+   ================================ */
+
+.base-configs {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 10px 0 20px;
+    text-align: left;
+}
+
+.config-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.config-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.config-hint {
+    font-size: 12px;
+    color: var(--text);
+    opacity: 0.75;
+}
+
+.config-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.config-separator {
+    color: var(--text);
+    opacity: 0.6;
+}
+
+.base-configs input[type="number"] {
+    width: 100px;
+    box-sizing: border-box;
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 8px 12px;
+    background-color: var(--code-bg);
+    color: var(--text-h);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.base-configs input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.toggle-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.toggle-button {
+    flex: 1;
+    background-color: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text);
+    transition: all 0.15s ease;
+}
+
+.toggle-button:hover {
+    filter: brightness(1.15);
+}
+
+.toggle-button.selected {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--text-h);
+    box-shadow: 0 0 4px var(--accent-border);
+}
+
+.game-dimension-button button.selected {
+    filter: none;
+}
+
+.game-dimension-button button.selected img {
+    filter: invert(1) drop-shadow(0 0 4px var(--accent));
+}
+
+.checkbox-row {
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+.checkbox-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-h);
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.project-meta {
+    font-size: 12px;
+    color: var(--text);
+    opacity: 0.7;
 }

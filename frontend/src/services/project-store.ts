@@ -2,10 +2,10 @@
 //
 // Hoje usa localStorage como storage local rápido (o WebView2 do MAUI suporta
 // normalmente, já que é um browser real embutido). Quando a Fase 0 do roadmap
-// (compressão real + parser multi-script) estiver pronta, isso deve ser
-// substituído/complementado por leitura real do arquivo .light via useBridge,
-// mas a INTERFACE pública (saveProject/getProject/getAllProjects/deleteProject)
-// pode continuar a mesma — só troca a implementação por dentro.
+// (compressão real de verdade + parser multi-script) estiver pronta, a leitura
+// pode passar a vir do próprio arquivo .light via useBridge — a INTERFACE
+// pública (saveProject/getProject/getAllProjects/deleteProject) pode continuar
+// exatamente igual, só troca a implementação por dentro.
 
 const STORAGE_KEY = 'lumenion:projects';
 
@@ -25,8 +25,8 @@ export interface ProjectConfig {
 export interface StoredProject {
     id: number;
     image: string;
-    projectName: string;
     gameName: string;
+    gameInfo: string;
     config: ProjectConfig;
     createdAt: number;
     updatedAt: number;
@@ -62,7 +62,7 @@ function writeAll(data: Record<number, StoredProject>): void {
     }
 }
 
-/** Cria ou atualiza um projeto, sempre indexado pelo mesmo `id`. */
+/** Cria ou atualiza um projeto, sempre indexado pelo mesmo `id`. Preserva createdAt original em edições. */
 export function saveProject(project: Omit<StoredProject, 'updatedAt'>): StoredProject {
     const all = readAll();
     const existing = all[project.id];

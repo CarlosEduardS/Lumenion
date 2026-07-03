@@ -5,7 +5,7 @@ const aguardarDotNet = (): Promise<void> => {
             resolve();
             return;
         }
-        
+
         let tentativas = 0;
         const intervalo = setInterval(() => {
             tentativas++;
@@ -21,38 +21,34 @@ const aguardarDotNet = (): Promise<void> => {
 };
 
 export function useBridge() {
-    
-    // 1. Selecionar/Importar arquivo .light
-    const SelectLightFile = async (): Promise<string> => {
-        try {
-            await aguardarDotNet();
 
-            return await (window as any).DotNet.invokeMethodAsync(
-                'Lumenion', 
-                'AbrirSelecionadorDeArquivo'
-            );
-        } catch (error) {
-            console.error("Erro na comunicação com o C# (Import):", error);
-            return `Erro: ${error}`;
-        }
+    // 1. Selecionar/Importar arquivo .light — agora devolve os bytes crus do
+    // arquivo (ou null se o usuário cancelou o seletor).
+    const SelectLightFile = async (): Promise<Uint8Array | null> => {
+        await aguardarDotNet();
+
+        const resultado = await (window as any).DotNet.invokeMethodAsync(
+            'Lumenion',
+            'AbrirSelecionadorDeArquivo'
+        );
+
+        // O C# devolve null quando o usuário cancela o seletor de arquivo.
+        // JSInterop marshala byte[] como um array de números / Uint8Array.
+        return resultado ? new Uint8Array(resultado) : null;
     };
 
-    // 2. Exportar o projeto atual para um arquivo .light
-    const ExportLightFile = async (lightFile: any): Promise<string> => {
-        try {
-            await aguardarDotNet();
+    // 2. Exportar o projeto atual para um arquivo .light — manda os bytes
+    // como parâmetro solto (não dentro de um objeto), pra manter o transporte
+    // binário eficiente em vez de virar base64 dentro de um JSON.
+    const ExportLightFile = async (fileName: string, content: Uint8Array): Promise<string> => {
+        await aguardarDotNet();
 
-            // Enviando o objeto/dados do projeto para o C# processar e salvar
-            // Certifique-se de ter um método correspondente no C# com [JSInvokable("ExportarArquivoProjeto")]
-            return await (window as any).DotNet.invokeMethodAsync(
-                'Lumenion', 
-                'ExportarArquivoProjeto', 
-                lightFile
-            );
-        } catch (error) {
-            console.error("Erro na comunicação com o C# (Export):", error);
-            return `Erro: ${error}`;
-        }
+        return await (window as any).DotNet.invokeMethodAsync(
+            'Lumenion',
+            'ExportarArquivoProjeto',
+            fileName,
+            content
+        );
     };
 
     return { SelectLightFile, ExportLightFile };

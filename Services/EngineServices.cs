@@ -1,111 +1,80 @@
 using Microsoft.Maui.Storage;
 using Microsoft.JSInterop;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Lumenion;
-
-public class ExportPayload
-{
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
-
-    [JsonPropertyName("content")]
-    public string Content { get; set; } = string.Empty;
-}
 
 public class EngineService
 {
     [JSInvokable("AbrirSelecionadorDeArquivo")]
-    public static async Task<string> AbrirSelecionadorDeArquivo()
+    public static async Task<byte[]?> AbrirSelecionadorDeArquivo()
     {
-        try
+        var opcoesDeFiltro = new PickOptions
         {
-            var opcoesDeFiltro = new PickOptions
+            PickerTitle = "Selecione o arquivo do Lumenion (.light)",
+            FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                PickerTitle = "Selecione o arquivo do Lumenion (.light)",
-                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-                {
-                    { DevicePlatform.WinUI, new[] { ".light" } },
-                    { DevicePlatform.Android, new[] { "application/octet-stream" } },
-                    { DevicePlatform.iOS, new[] { "com.lumenion.light" } }
-                })
-            };
+                { DevicePlatform.WinUI, new[] { ".light" } },
+                { DevicePlatform.Android, new[] { "application/octet-stream" } },
+                { DevicePlatform.iOS, new[] { "com.lumenion.light" } }
+            })
+        };
 
-            var resultado = await FilePicker.Default.PickAsync(opcoesDeFiltro);
+        var resultado = await FilePicker.Default.PickAsync(opcoesDeFiltro);
 
-            if (resultado != null)
-            {
-                // 🌟 A MÁGICA NATIVA: Lê todo o conteúdo de texto do arquivo .light selecionado
-                string conteudoDoArquivo = await File.ReadAllTextAsync(resultado.FullPath, Encoding.UTF8);
-                
-                // Retornamos o conteúdo bruto diretamente para o JavaScript processar
-                return conteudoDoArquivo;
-            }
-
-            return "Cancelado";
-        }
-        catch (Exception ex)
+        if (resultado == null)
         {
-            return $"Erro: {ex.Message}";
+            // Usuário cancelou o seletor — o JS trata null como "importação cancelada"
+            return null;
         }
+
+        // 🌟 Agora lê BYTES crus do disco, não texto — o .light é binário de verdade
+        return await File.ReadAllBytesAsync(resultado.FullPath);
     }
 
     [JSInvokable("ExportarArquivoProjeto")]
-    public static async Task<string> ExportarArquivoProjeto(System.Text.Json.JsonElement dadosDoProjeto)
+    public static async Task<string> ExportarArquivoProjeto(string nomeArquivo, byte[] conteudo)
     {
-        try
+        if (conteudo == null || conteudo.Length == 0)
         {
-            // 1. Deserializa o payload recebido do JavaScript
-            var payload = dadosDoProjeto.Deserialize<ExportPayload>();
-            if (payload == null || string.IsNullOrEmpty(payload.Content))
+            throw new InvalidOperationException("Dados de exportação inválidos: conteúdo vazio.");
+        }
+
+        string resultadoTxt = "Cancelado pelo usuário";
+
+        // Garante a execução na thread visual principal (obrigatório pros pickers nativos)
+        await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+#if WINDOWS
+            // Criando o seletor nativo do WinUI 3
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+
+            // 🌟 CRÍTICO para WinUI 3: Captura o ponteiro (handle) da janela ativa do MAUI
+            var window = Microsoft.Maui.Controls.Application.Current?.Windows[0].Handler?.PlatformView as Microsoft.UI.Xaml.Window;
+            if (window != null)
             {
-                return "Erro: Dados de exportação inválidos.";
+                var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandle);
             }
 
-            string resultadoTxt = "Cancelado pelo usuário";
+            savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            savePicker.FileTypeChoices.Add("Lumenion Light File", new System.Collections.Generic.List<string>() { ".light" });
+            savePicker.SuggestedFileName = nomeArquivo;
 
-            // 2. Garante a execução na thread visual principal
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            var arquivoAlvo = await savePicker.PickSaveFileAsync();
+
+            if (arquivoAlvo != null)
             {
-    #if WINDOWS
-                // Criando o seletor nativo do WinUI 3
-                var savePicker = new Windows.Storage.Pickers.FileSavePicker();
-                
-                // 🌟 CRÍTICO para WinUI 3: Captura o ponteiro (handle) da janela ativa do MAUI
-                var window = Microsoft.Maui.Controls.Application.Current?.Windows[0].Handler?.PlatformView as Microsoft.UI.Xaml.Window;
-                if (window != null)
-                {
-                    var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
-                    WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandle);
-                }
+                // 🌟 Escreve BYTES crus no arquivo escolhido — nada de texto/ASCII
+                await Windows.Storage.FileIO.WriteBufferAsync(arquivoAlvo, conteudo.AsBuffer());
+                resultadoTxt = $"Sucesso: Arquivo salvo em {arquivoAlvo.Path}";
+            }
+#else
+            resultadoTxt = "Plataforma não suportada nativamente para salvar arquivos.";
+#endif
+        });
 
-                // Configurando as opções do arquivo
-                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-                savePicker.FileTypeChoices.Add("Lumenion Light File", new System.Collections.Generic.List<string>() { ".light" });
-                savePicker.SuggestedFileName = payload.Name;
-
-                // Abre a janela nativa do Windows Explorer
-                var arquivoAlvo = await savePicker.PickSaveFileAsync();
-                
-                if (arquivoAlvo != null)
-                {
-                    // Escreve o texto compacto diretamente no arquivo escolhido
-                    await Windows.Storage.FileIO.WriteTextAsync(arquivoAlvo, payload.Content);
-                    resultadoTxt = $"Sucesso: Arquivo salvo em {arquivoAlvo.Path}";
-                }
-    #else
-                resultadoTxt = "Plataforma não suportada nativamente para salvar arquivos.";
-    #endif
-            });
-
-            return resultadoTxt;
-        }
-        catch (Exception ex)
-        {
-            return $"Erro interno no C#: {ex.Message}";
-        }
+        return resultadoTxt;
     }
 }
