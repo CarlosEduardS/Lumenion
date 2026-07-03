@@ -6,8 +6,7 @@ import ProjectCard from '../../components/project-card/project-card';
 import WindowCard from '../../components/window-card/window-card';
 import './home.css';
 
-import ConvertToFile from '../../services/convert-light-file';
-import { type ProjectTemplate} from "../../services/replace-word";
+import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
 import { parseLightFile } from '../../services/decompress-light-file';
 
 type ActiveGroup = 'files' | 'extension' | null;
@@ -16,8 +15,8 @@ type ActiveGroup = 'files' | 'extension' | null;
 interface Project {
   id: number;
   image: string;
-  projectName: string;
   gameName: string;
+  gameInfo: string;
 }
 
 export default function HomePage() {
@@ -71,9 +70,9 @@ export default function HomePage() {
       // 3. Monta o objeto do projeto no formato que o seu card espera
       const projetoImportado: Project = {
         id: dadosExtraidos.id,
-        image: "assets/pngs/image-static.png", // Imagem padrão (ou você pode mapear no futuro)
-        projectName: dadosExtraidos.name,
-        gameName: dadosExtraidos.info
+        image: "/assets/pngs/image-static.png", // Imagem padrão (ou você pode mapear no futuro)
+        gameName: dadosExtraidos.name,
+        gameInfo: dadosExtraidos.info
       };
 
       // ==========================================
@@ -82,7 +81,8 @@ export default function HomePage() {
       console.group("🔓 PROJETO DESCOMPACTADO COM SUCESSO!");
       console.log("ID do Projeto:", dadosExtraidos.id);
       console.log("Nome:", dadosExtraidos.name);
-      console.log("Script Original Restaurado:\n", dadosExtraidos.rawScript);
+      // Transforma o texto em string formatada JSON para inspecionar os caracteres ocultos como \n e \t
+      console.log("🔍 String Pura do Script (Ver Escapes):\n", dadosExtraidos.rawScript);
       console.groupEnd();
       // ==========================================
 
@@ -94,24 +94,26 @@ export default function HomePage() {
     }
   };
 
-  const handleExportProject = async (project: Project) => {
-    try {
-      // console.log("Iniciando exportação do projeto:", project.projectName);
+  const handleExportProject = async (project: any) => {
+    // 🛠️ INÍCIO DO DEBUG GLOBAL DA EXPORTAÇÃO
+    console.group(`🎯 [HOME EXPORT TRIGGER] Iniciando processo de exportação na UI`);
+    console.log("📥 Dados do projeto clicado recebidos da lista:", project);
 
+    try {
       const dadosDoProjeto: ProjectTemplate = {
-        ProjectID: project.id,
-        ImgUrl: project.image,
-        name: project.projectName,
-        info: project.gameName,
+        ProjectID: project.id || 101, // Fallback caso o objeto de teste venha sem ID
+        ImgUrl: project.image || "default.png",
+        name: project.gameName || "Jogo Sem Nome",
+        info: project.gameInfo || "Nova Engine Light",
         configProje: [
-          { IDdirect: project.id, pathNavigate: "root/project", configs: ["resolution=1920x1080", "vsync=true"] }
+          { IDdirect: project.id || 101, pathNavigate: "root/project", configs: ["resolution=1920x1080", "vsync=true"] }
         ],
         configGame: [
-          { IDdirect: project.id, pathNavigate: "root/game", configs: ["gravity=9.8", "debugMode=false"] }
+          { IDdirect: project.id || 101, pathNavigate: "root/game", configs: ["gravity=9.8", "debugMode=false"] }
         ],
         scripts: [
           { 
-            IDdirect: project.id, 
+            IDdirect: project.id || 101, 
             path: "src/main.as", 
             script: 
             "class Player {\n\tint id\n\tstring name\n\tfloat speed\n\tbool isActive\n\tList inventory\n\n\tfunction start() {\n\t\tif (true) {\n\t\t\tinput = 'Lumenion'\n\t\t} else if (false) {\n\t\t\tinput = null\n\t\t} else {\n\t\t\tinput = 'Empty'\n\t\t}\n\n\t\twhile (isActive) {\n\t\t\tfor (int i = 0; i < 10; i++) {\n\t\t\t\tswitch (case) {\n\t\t\t\t\treturn true\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
@@ -125,17 +127,33 @@ export default function HomePage() {
         }
       };
 
-      // Executa a conversão
+      console.log("🧱 Objeto estruturado do mapa Lumenion pronto para compactação:", dadosDoProjeto);
+
+      // Executa a conversão chamando o compressor binário que criamos
+      console.group("🗜️ Executando a codificação para a Base Binária...");
       const arquivoGerado = ConvertToFile(dadosDoProjeto);
-      
+      console.groupEnd();
+
+      // Debug específico do arquivo gerado
+      console.group("📄 Detalhes do arquivo .light gerado na memória do React");
+      console.log(`📌 Nome do Arquivo: ${arquivoGerado.fileName}`);
+      console.log(`📌 Tamanho Estimado do Blob: ${arquivoGerado.blob.size} bytes`);
+      console.log(`📌 Conteúdo Textual Compactado bruto:\n`, arquivoGerado.content);
+      console.groupEnd();
+
+      // Disparo crucial para o .NET C#
+      console.log("🚀 Despachando dados via Bridge IPC para o C#...");
       const resultadoBridge = await ExportLightFile({
         name: arquivoGerado.fileName,
         content: arquivoGerado.content
       });
-      console.log("Resposta da Bridge:", resultadoBridge);
+      
+      console.log("✅ Resposta de Sucesso da Bridge C#:", resultadoBridge);
 
     } catch (error) {
-      console.error("Falha ao exportar o arquivo do projeto:", error);
+      console.error("❌ Falha crítica ao exportar o arquivo do projeto:", error);
+    } finally {
+      console.groupEnd(); // Garante o fechamento do bloco de debug global no console
     }
   };
 
@@ -158,8 +176,8 @@ export default function HomePage() {
     const novoProjeto: Project = {
       id: Date.now(), // Gera um ID único simples usando o timestamp
       image: selectedImage || "assets/pngs/image-static.png", // Imagem padrão caso não escolha nenhuma
-      projectName: InputGameName,
-      gameName: InputInfo || "Sem informações adicionais"
+      gameName: InputGameName,
+      gameInfo: InputInfo || "Sem informações adicionais"
     };
 
     // Adiciona o novo projeto na lista existente
@@ -225,8 +243,8 @@ export default function HomePage() {
               HTML={
                 <>
                   <img src={project.image} width={80} style={{ borderRadius: '6px', objectFit: 'cover' }} />
-                  <h4>{project.projectName}</h4>
-                  <p>{project.gameName}</p>
+                  <h4>{project.gameName}</h4>
+                  <p>{project.gameInfo}</p>
                   <div className="buttons">
                     <button onClick={() => handleOpenProject(project)}>Abrir Projeto</button>
                     <button>Editar Configuracões</button>

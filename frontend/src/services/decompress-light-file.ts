@@ -1,34 +1,73 @@
+// Dicionário de Tradução Reversa Binário -> Código Real
+const bin: Record<string, string> = {
+    '1 1': 'class',
+    '1 2': 'function',
+    '1 3': 'if',
+    '1 4': 'else',
+    '1 5': 'for',
+    '1 6': 'while',
+    '1 7': 'return', 
+    '1 8': 'public',
+    '1 9': 'private',
+    '1 10': 'protected',
+    '1 11': 'static',
+    '1 12': 'void',
+    '1 13': 'new',
+    '1 14': 'this',
+    '1 15': 'base',
+    '1 16': 'null',
+    '1 17': 'true',
+    '1 18': 'false',
+    '1 19': 'break',
+    '1 20': 'continue',
+    '1 21': '\n', // 🔑 Corrigido: Código numérico retorna a quebra de linha real
+    '1 22': '\t', // 🔑 Corrigido: Código numérico retorna o caractere Tab real
+    '2 1': 'int',
+    '2 2': 'float',
+    '2 3': 'double',
+    '2 4': 'string',   
+    '2 5': 'bool',
+    '2 6': 'char',
+    '2 7': 'object',
+    '2 8': 'decimal',
+    '2 9': 'long',
+    '2 10': 'short',
+    '2 11': 'byte',
+    '2 12': 'sbyte',
+    '2 13': 'uint',
+    '2 14': 'ulong',
+    '2 15': 'suint',
+    '3 1': '+',
+    '3 2': '-',
+    '3 3': '*',
+    '3 4': '/',
+    '3 5': '%',
+    '3 6': '++',
+    '3 7': '--',
+    '3 8': '==',
+    '3 9': '!=',
+    '3 10': '>',
+    '3 11': '<',
+    '3 12': '>=',
+    '3 13': '<=',
+    '3 14': '&&',
+    '3 15': '||',
+    '3 16': '!',
+};
+
 export function decompressScript(compressedScript: string): string {
-    return compressedScript
-        // 1. PRIMEIRO: Restaurar formatação (Espaços, Tabs e Quebras de linha)
-        .replace(/§/g, ' ')
-        .replace(/¢/g, '\t')
-        .replace(/£/g, '\n')
+    if (!compressedScript) return "";
 
-        // 2. SEGUNDO: Palavras menores e tipos (Ordem inversa do compressor)
-        .replace(/I@/g, 'if')
-        .replace(/I/g, 'int')
-        .replace(/F\$/g, 'for')
-        .replace(/U&/g, 'true')
-        .replace(/%%/g, 'null')
-        .replace(/&L/g, 'List')
-        .replace(/B&/g, 'bool')
-        .replace(/C\$/g, 'case')
-        .replace(/EL@/g, 'else')
+    // A Regex identifica padrões compostos (Dígito indicador 1-3 + Espaço + Índice numérico)
+    // O modificador 'g' garante que todas as ocorrências do arquivo sejam traduzidas de uma vez só
+    let restoredText = compressedScript.replace(/([123])\s+(\d+)/g, (match) => {
+        // Se encontrar na nossa tabela 'bin', substitui. Caso contrário, preserva o token original.
+        return bin[match] !== undefined ? bin[match] : match;
+    });
 
-        // 3. TERCEIRO: Palavras maiores e completas
-        .replace(/H\$/g, 'while')
-        .replace(/C@S/g, 'class')
-        .replace(/S&/g, 'false')
-        .replace(/F##/g, 'float')
-        .replace(/I%P/g, 'input')
-        .replace(/T#R/g, 'string')
-        .replace(/S\$/g, 'switch')
-        .replace(/R@T/g, 'return')
-        .replace(/F@C/g, 'function');
+    return restoredText;
 }
 
-// Interface para sabermos o que foi extraído do arquivo bruto
 export interface DecompressedProject {
     id: number;
     name: string;
@@ -37,26 +76,42 @@ export interface DecompressedProject {
 }
 
 export function parseLightFile(rawContent: string): DecompressedProject {
-    // Exemplo de formato: // LUMENION ENGINE LIGHT FILE v1.0\nID:17824...;NAME:33;INFO:Jogo RPG;\nSCRIPT:17824...[src/main.as]=>C@S§Player...
+    console.group("📂 [LUMENION BINARY DECOMPRESSOR] Lendo arquivo .light importado...");
     
     // Divide as linhas do arquivo
     const lines = rawContent.split('\n');
     
-    // Captura a linha de dados (ID, NAME, INFO)
+    // Captura a linha de metadados (ID, NAME, INFO) que está na linha index 1
     const dataLine = lines[1] || "";
     const idMatch = dataLine.match(/ID:(\d+);/);
     const nameMatch = dataLine.match(/NAME:(.*?);/);
     const infoMatch = dataLine.match(/INFO:(.*?);/);
 
-    // Captura o script compactado após o '=>'
+    const id = idMatch ? Number(idMatch[1]) : Date.now();
+    const name = nameMatch ? nameMatch[1] : "Projeto Importado";
+    const info = infoMatch ? infoMatch[1] : "Sem informações";
+
+    console.log(`📋 Metadados Identificados -> ID: ${id} | Nome: ${name}`);
+
+    // Captura a linha com a cadeia tokenizada do script
     const scriptLine = lines[2] || "";
     const scriptParts = scriptLine.split('=>');
     const compressedScript = scriptParts[1] || "";
 
+    console.group("⚡ Processando e traduzindo cadeia binária do script...");
+    
+    // Executa a tradução dos tokens numéricos voltando para a sintaxe legível
+    const decompressedScript = decompressScript(compressedScript);
+    
+    console.groupEnd();
+    console.groupEnd(); // FIM DO DEBUG GLOBAL
+
     return {
-        id: idMatch ? Number(idMatch[1]) : Date.now(),
-        name: nameMatch ? nameMatch[1] : "Projeto Importado",
-        info: infoMatch ? infoMatch[1] : "Sem informações",
-        rawScript: decompressScript(compressedScript)
+        id,
+        name,
+        info,
+        rawScript: decompressedScript
     };
 }
+
+export { parseLightFile as base_decompress };

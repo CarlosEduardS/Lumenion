@@ -9,11 +9,15 @@ export default function EditorPage({ projectId }: EditorPageProps) {
   return (
     <>
       <SimpleLayout
-        HeaderContent={<div>Header</div>}
+        HeaderContent={
+        <div className="main-buttons">
+          <button></button>
+        </div>
+      }
         LeftContent={<div>Left Sidebar</div>}
         RightContent={<div>Right Sidebar</div>}
         MainContent={<div>Main Content para o projeto {projectId ?? 'sem id'}</div>}
-        FooterContent={<div>Footer</div>}
+        FooterContent={<div>Terminal</div>}
       />
     </>
   )
