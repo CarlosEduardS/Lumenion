@@ -50,7 +50,7 @@ function ConvertToFile(project: ProjectTemplate): LightFileResult {
 
     const content = compressProjectToBytes(project);
 
-    const blob = new Blob([content], { type: 'application/octet-stream' });
+    const blob = new Blob([content.slice()], { type: 'application/octet-stream' });
     const fileName = `${project.name.toLowerCase().replace(/\s+/g, '-')}.light`;
 
     console.log(`🎯 Arquivo binário gerado: ${fileName} (${content.byteLength} bytes)`);

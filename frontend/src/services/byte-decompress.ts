@@ -1,6 +1,7 @@
 import { type ProjectTemplate, type ConfigSaveTemplate } from './convert-light-file';
 import {
     Mode,
+    ModeNames,
     StructBlock,
     MODES_WITH_OPERAND,
     KEYWORDS,
@@ -65,7 +66,7 @@ function expectMode(reader: ByteReader, expected: Mode, context: string): { oper
     const { mode, operand } = reader.readMode();
     if (mode !== expected) {
         throw new Error(
-            `Arquivo .light corrompido ou fora do formato esperado: esperava ${Mode[expected]} em "${context}", encontrou ${Mode[mode] ?? mode}.`
+            `Arquivo .light corrompido ou fora do formato esperado: esperava ${ModeNames[expected]} em "${context}", encontrou ${ModeNames[mode] ?? mode}.`
         );
     }
     return { operand };
@@ -94,7 +95,7 @@ function readScriptTokens(reader: ByteReader): string {
                 script += reader.readString();
                 break;
             default:
-                throw new Error(`Byte de modo inesperado dentro do script: ${Mode[mode] ?? mode}`);
+                throw new Error(`Byte de modo inesperado dentro do script: ${ModeNames[mode] ?? mode}`);
         }
     }
     return script;

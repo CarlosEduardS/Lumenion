@@ -1,7 +1,9 @@
 using Microsoft.Maui.Storage;
 using Microsoft.JSInterop;
 using System.IO;
+#if WINDOWS
 using System.Runtime.InteropServices.WindowsRuntime;
+#endif
 
 namespace Lumenion;
 
