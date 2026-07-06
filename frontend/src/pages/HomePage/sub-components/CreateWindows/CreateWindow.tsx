@@ -24,7 +24,7 @@ export default function CreateWindow(props: Props) {
     <>
       <header>
         <h2>{editingProjectId ? 'Editar projeto' : 'Criar um novo jogo'}</h2>
-        <button onClick={toggleWindow} className='close-button'><IoCloseCircle size={30} color="#c6c6c6" /></button>
+        <button onClick={toggleWindow} className='close-button'><IoCloseCircle size={35} color="#c6c6c6" /></button>
       </header>
       <div className="window-body">
         <div className="primery-place">

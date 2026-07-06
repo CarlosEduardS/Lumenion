@@ -3,7 +3,6 @@ import { useBridge } from '../../hooks/useBridge';
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout';
 import WindowCard from '../../components/window-card/window-card';
 import './home.css';
-import './Header.css';
 
 import ConvertToFile, { type ProjectTemplate } from '../../services/convert-light-file';
 import { parseLightFile } from '../../services/decompress-light-file';
@@ -280,7 +279,7 @@ export default function HomePage() {
     <SimpleLayout
       HeaderContent={{ isVisible: true, content: (
         <>
-        <div className="button-group">
+        <div className="home-button-group">
           <button 
             className={activeGroup === 'files' ? 'active-tab' : ''} 
             onClick={() => handleTradeGroup('files')}

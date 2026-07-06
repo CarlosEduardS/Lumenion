@@ -16,8 +16,8 @@
 .main-inputs {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    width: 100%;
+    gap: 6px;
+    width: 50%;
     flex-grow: 0.8;
 }
 
@@ -51,10 +51,11 @@
     border-radius: 4px;
     cursor: pointer;
     margin-right: 10px;
+    width: 15rem;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.game-dimension-button { padding: 8px; display:flex; gap:8px }
+.game-dimension-button { padding: 8px; display:flex; gap:8px; border: none; background-color: transparent; }
 .game-dimension-button img { filter: invert(1); transition: all 0.2s ease-in }
 .game-dimension-button img:hover { filter: brightness(0.5) }
 
@@ -76,16 +77,15 @@
 /* botão de fechar no canto superior da janela de criação/edição */
 .close-button {
     position: absolute;
-    right: 12px;
-    top: 12px;
-    width: 36px;
-    height: 36px;
+    right: 15px;
+    top: 18px;
+    width: 2rem;
+    height: 2rem;
     border-radius: 6px;
     display:flex;
     align-items:center;
     justify-content:center;
     background: transparent;
-    border: 1px solid var(--border);
     color: var(--text-h);
 }
-.close-button:hover { background: var(--accent-bg); border-color:var(--accent-border); }
+.close-button:hover { filter: brightness(0.5);}

@@ -1,24 +1,22 @@
 import './editor.css'
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout'
 
-interface EditorPageProps {
-  projectId?: string;
-}
+import Header from './sub-components/Header/Header'
+import MainContent from './sub-components/MainContent/MainContent';
+import Footer from './sub-components/Footer/Footer';
+import LeftContent from './sub-components/LeftContent/LeftContent';
+import RightContent from './sub-components/RightContent/RightContent';
 
-export default function EditorPage({ projectId }: EditorPageProps) {
+import { type StoredProject } from '../../services/project-store';
+
+export default function EditorPage( project : StoredProject) {
   return (
-    <>
-      <SimpleLayout
-        HeaderContent={
-        <div className="main-buttons">
-          <button></button>
-        </div>
-      }
-        LeftContent={<div>Left Sidebar</div>}
-        RightContent={<div>Right Sidebar</div>}
-        MainContent={<div>Main Content para o projeto {projectId ?? 'sem id'}</div>}
-        FooterContent={<div>Terminal</div>}
-      />
-    </>
+    <SimpleLayout
+      HeaderContent={{ isVisible: true, content: Header(project) }}
+      LeftContent={{ isVisible: true, content: LeftContent(project) }}
+      RightContent={{ isVisible: true, content: RightContent(project) }}
+      MainContent={{ isVisible: true, content: MainContent(project) }}
+      FooterContent={{ isVisible: true, content: Footer(project) }}
+    />
   )
 }
