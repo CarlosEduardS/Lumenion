@@ -9,6 +9,23 @@ header button {
     transition: all 0.3s ease;
     margin-right: 1rem;
 }
+.header-component {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.header-component .body-buttons {
+    justify-self: start;
+    align-self: flex-start;
+    margin-left: 8px;
+}
+
+.header-component > .hr {
+    width: 100%;
+    background-color: rgba(59, 59, 59, 0.178);
+    padding: 1px;
+}
 
 button:hover {
     filter: brightness(0.5);
