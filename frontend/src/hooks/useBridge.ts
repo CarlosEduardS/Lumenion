@@ -1,3 +1,10 @@
+// 🌳 Espelha a classe FolderNode do C# — cada nó é uma pasta ou um arquivo.
+export interface ProjectTreeNode {
+    name: string;
+    isDirectory: boolean;
+    children: ProjectTreeNode[];
+}
+
 // Função única para verificar e aguardar o Blazor carregar (evita repetição)
 const aguardarDotNet = (): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -69,5 +76,18 @@ export function useBridge() {
         );
     };
 
-    return { SelectLightFile, ExportLightFile, CriarPastaDoProjeto };
+    // 4. Lê a árvore de pastas/arquivos do projeto no disco, a partir do
+    // folderPath salvo no StoredProject. Devolve null se a pasta não existir
+    // mais (movida ou apagada), ou se o projeto não tiver folderPath salvo.
+    const LerArvoreDoProjeto = async (caminhoPasta: string): Promise<ProjectTreeNode | null> => {
+        await aguardarDotNet();
+
+        return await (window as any).DotNet.invokeMethodAsync(
+            'Lumenion',
+            'LerArvoreDoProjeto',
+            caminhoPasta
+        );
+    };
+
+    return { SelectLightFile, ExportLightFile, CriarPastaDoProjeto, LerArvoreDoProjeto };
 }
