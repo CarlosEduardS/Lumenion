@@ -51,5 +51,18 @@ export function useBridge() {
         );
     };
 
-    return { SelectLightFile, ExportLightFile };
+    // 3. Cria a pasta base do projeto no disco (Documents/Lumenion Projects/CSharp|LumenScript/<nome>),
+    // com subpastas Scripts/Assets/Scenes já prontas. Devolve o caminho completo criado.
+    const CriarPastaDoProjeto = async (nomeProjeto: string, scriptingMode: 'csharp' | 'lumen'): Promise<string> => {
+        await aguardarDotNet();
+
+        return await (window as any).DotNet.invokeMethodAsync(
+            'Lumenion',
+            'CriarPastaDoProjeto',
+            nomeProjeto,
+            scriptingMode
+        );
+    };
+
+    return { SelectLightFile, ExportLightFile, CriarPastaDoProjeto };
 }

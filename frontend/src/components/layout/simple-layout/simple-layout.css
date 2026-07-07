@@ -129,7 +129,7 @@ body:has(.resizer-horizontal:active) .left-bar {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-header .home-button-group button {
+header .home-button-group button, header #config-button-home {
     min-width: 80px;
     background-color: transparent;
     border: 1px solid var(--accent);

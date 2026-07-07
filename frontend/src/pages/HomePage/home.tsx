@@ -70,7 +70,7 @@ export default function HomePage() {
   // ⚡ Lista de projetos, carregada do storage (persistente por id)
   const [projectsList, setProjectsList] = useState<StoredProject[]>([]);
 
-  const { SelectLightFile, ExportLightFile } = useBridge();
+  const { SelectLightFile, ExportLightFile, CriarPastaDoProjeto } = useBridge();
 
   // 📥 Carrega os projetos já salvos assim que a Home monta
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function HomePage() {
 
   const handleOpenEditWindow = (project: StoredProject) => {
     setEditingProjectId(project.id);
-    setSelectedImage(project.image === '/assets/pngs/image-static.png' ? null : project.image);
+    setSelectedImage(project.image === 'assets/pngs/image-static.png' ? null : project.image);
     setInputGameName(project.gameName);
     setInputInfo(project.gameInfo);
     setConfig(project.config);
@@ -243,13 +243,28 @@ export default function HomePage() {
     setConfig((current) => ({ ...current, [key]: value }));
   };
 
-  const handleSaveProject = () => {
+  const handleSaveProject = async () => {
     if (!InputGameName.trim()) {
       alert("Por favor, digite o nome do projeto!");
       return;
     }
 
+    const isNovoProjeto = editingProjectId === null;
     const id = editingProjectId ?? Date.now();
+
+    // 📁 A pasta base só é criada UMA vez, no momento da criação — editar um
+    // projeto existente não deve gerar (ou mover) pasta nenhuma.
+    let folderPath: string | undefined;
+    if (isNovoProjeto) {
+      try {
+        folderPath = await CriarPastaDoProjeto(InputGameName, config.scriptingMode);
+        console.log(`📁 Pasta do projeto criada em: ${folderPath}`);
+      } catch (error) {
+        // Falha ao criar a pasta não deve impedir salvar o projeto — só avisa.
+        console.error('Não foi possível criar a pasta base do projeto:', error);
+        alert('O projeto foi salvo, mas não foi possível criar a pasta no disco. Veja o console para detalhes.');
+      }
+    }
 
     const projetoSalvo = saveProject({
       id,
@@ -258,6 +273,7 @@ export default function HomePage() {
       gameInfo: InputInfo || "Sem informações adicionais",
       config,
       createdAt: Date.now(), // saveProject preserva o createdAt original se o id já existir
+      ...(folderPath ? { folderPath } : {}),
     });
 
     setProjectsList((listaAtual) => {
@@ -294,7 +310,7 @@ export default function HomePage() {
           </button>
         </div>
         <h2 className='title'>LUMENION</h2>
-        <button>Configuracões</button>
+        <button id="config-button-home">Configuracões</button>
         </>
       ) }}
       LeftContent={{ isVisible: !!activeGroup, content: (

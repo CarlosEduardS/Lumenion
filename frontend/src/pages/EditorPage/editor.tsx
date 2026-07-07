@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import './editor.css'
 import SimpleLayout from '../../components/layout/simple-layout/simple-layout'
 
@@ -7,16 +8,54 @@ import Footer from './sub-components/Footer/Footer';
 import LeftContent from './sub-components/LeftContent/LeftContent';
 import RightContent from './sub-components/RightContent/RightContent';
 
-import { type StoredProject } from '../../services/project-store';
+import { type StoredProject, getProject } from '../../services/project-store';
 
-export default function EditorPage( project : StoredProject) {
+type Props = {
+  projectId?: string;
+};
+
+export default function EditorPage({ projectId }: Props) {
+  const [project, setProject] = useState<StoredProject | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  // 📥 Carrega o projeto de verdade pelo id assim que a rota /editor/:id monta
+  // (antes, o objeto que chegava aqui era só { projectId }, não o StoredProject
+  // completo — todo mundo lá embaixo lia campos undefined em silêncio).
+  useEffect(() => {
+    if (!projectId) {
+      setNotFound(true);
+      return;
+    }
+
+    const encontrado = getProject(Number(projectId));
+    if (!encontrado) {
+      setNotFound(true);
+      return;
+    }
+
+    setProject(encontrado);
+    setNotFound(false);
+  }, [projectId]);
+
+  if (notFound) {
+    return (
+      <div className="editor-not-found">
+        <p>Não foi possível encontrar esse projeto. Ele pode ter sido apagado, ou o link está incorreto.</p>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return <div className="editor-loading">Carregando projeto...</div>;
+  }
+
   return (
     <SimpleLayout
-      HeaderContent={{ isVisible: true, content: Header(project) }}
-      LeftContent={{ isVisible: true, content: LeftContent(project) }}
-      RightContent={{ isVisible: true, content: RightContent(project) }}
-      MainContent={{ isVisible: true, content: MainContent(project) }}
-      FooterContent={{ isVisible: true, content: Footer(project) }}
+      HeaderContent={{ isVisible: true, content: <Header project={project} /> }}
+      LeftContent={{ isVisible: true, content: <LeftContent project={project} /> }}
+      RightContent={{ isVisible: true, content: <RightContent project={project} /> }}
+      MainContent={{ isVisible: true, content: <MainContent project={project} /> }}
+      FooterContent={{ isVisible: true, content: <Footer project={project} /> }}
     />
   )
 }

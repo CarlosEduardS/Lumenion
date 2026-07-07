@@ -1,6 +1,7 @@
 using Microsoft.Maui.Storage;
 using Microsoft.JSInterop;
 using System.IO;
+using System.Linq;
 #if WINDOWS
 using System.Runtime.InteropServices.WindowsRuntime;
 #endif
@@ -78,5 +79,41 @@ public class EngineService
         });
 
         return resultadoTxt;
+    }
+
+    [JSInvokable("CriarPastaDoProjeto")]
+    public static Task<string> CriarPastaDoProjeto(string nomeProjeto, string scriptingMode)
+    {
+#if WINDOWS
+        // Remove caracteres inválidos pra nome de pasta (ex: : / * ? não podem
+        // estar no nome de uma pasta no Windows)
+        var caracteresInvalidos = Path.GetInvalidFileNameChars();
+        string nomeSanitizado = new string(nomeProjeto.Select(c => caracteresInvalidos.Contains(c) ? '_' : c).ToArray()).Trim();
+
+        if (string.IsNullOrWhiteSpace(nomeSanitizado))
+        {
+            nomeSanitizado = "ProjetoSemNome";
+        }
+
+        // Projetos em C# e projetos em Lumen Script ficam em pastas separadas,
+        // deixando espaço pra cada modo evoluir sem misturar estrutura de arquivos.
+        string subPastaPorModo = scriptingMode == "csharp" ? "CSharp" : "LumenScript";
+
+        string pastaBase = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "Lumenion Projects",
+            subPastaPorModo,
+            nomeSanitizado
+        );
+
+        Directory.CreateDirectory(pastaBase);
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Scripts"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Scenes"));
+
+        return Task.FromResult(pastaBase);
+#else
+        throw new PlatformNotSupportedException("Criação de pasta de projeto ainda só é suportada no Windows.");
+#endif
     }
 }

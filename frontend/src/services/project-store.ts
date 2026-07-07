@@ -30,6 +30,8 @@ export interface StoredProject {
     config: ProjectConfig;
     createdAt: number;
     updatedAt: number;
+    /** Caminho da pasta base criada em disco na hora da criação (undefined em projetos importados antes dessa feature). */
+    folderPath?: string;
 }
 
 export function defaultProjectConfig(): ProjectConfig {

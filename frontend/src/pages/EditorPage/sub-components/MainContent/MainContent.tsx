@@ -1,8 +1,12 @@
 import './MainContent.css'
 import { type StoredProject } from '../../../../services/project-store';
 
-export default function MainContent( project: StoredProject) {
+type Props = {
+    project: StoredProject;
+};
+
+export default function MainContent({ project }: Props) {
     return (
-        <div>Main Content para o projeto {project.id ?? 'sem id'}</div>
+        <div>Main Content para o projeto {project.gameName} (id: {project.id})</div>
     )
 }

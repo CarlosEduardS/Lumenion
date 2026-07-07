@@ -3,7 +3,11 @@ import * as FaIcons from 'react-icons/fa'
 
 import { type StoredProject } from '../../../../services/project-store';
 
-export default function Footer(project : StoredProject) {
+type Props = {
+    project: StoredProject;
+};
+
+export default function Footer({ project: _project }: Props) {
     return (
         <div className="footer">
             <FaIcons.FaTerminal /> Terminal
