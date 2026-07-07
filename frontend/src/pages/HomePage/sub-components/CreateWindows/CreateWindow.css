@@ -1,24 +1,44 @@
 .window-body {
-    padding: 50px;
+    /* O .body do WindowCard já dá 24px de padding — aqui só complementa nas laterais,
+       em vez de somar 50px extras e empurrar o conteúdo pra fora da área visível. */
+    padding: 8px 16px 16px;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
 }
 
+/* Substitui o <hr/> sem estilo (que rendia como uma borda 3D quase invisível
+   e aparecia como um "." solto no fundo escuro) por uma linha simples e visível. */
+.window-body hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+}
+
 .primery-place {
     display: flex;
     flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
     padding: 10px;
-    justify-content: space-around;
     width: 100%;
+    box-sizing: border-box;
+}
+
+.primery-place img {
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .main-inputs {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    width: 50%;
-    flex-grow: 0.8;
+    gap: 8px;
+    width: 100%;
+    flex-grow: 1;
+    min-width: 0; /* evita que os inputs estourem a largura do flex container */
 }
 
 .window-body input[type="text"], .base-configs input[type="number"] {
@@ -51,12 +71,20 @@
     border-radius: 4px;
     cursor: pointer;
     margin-right: 10px;
-    width: 15rem;
+    max-width: 100%;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.game-dimension-button { padding: 8px; display:flex; gap:8px }
-.game-dimension-button img { filter: invert(1); transition: all 0.2s ease-in }
+.game-dimension-button { padding: 8px 0; display:flex; gap:8px; justify-content: center; }
+.game-dimension-button button {
+    background-color: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    transition: border-color 0.15s ease;
+}
+.game-dimension-button button.selected { border-color: var(--accent-border); box-shadow: 0 0 4px var(--accent-border); }
+.game-dimension-button img { filter: invert(1); transition: all 0.2s ease-in; width: 80px; }
 .game-dimension-button img:hover { filter: brightness(0.5) }
 
 .base-configs { display:flex; flex-direction:column; gap:18px; padding:10px 0 20px; text-align:left }
@@ -73,6 +101,18 @@
 .checkbox-row label { display:flex; align-items:center; gap:6px; font-size:14px; color:var(--text-h); cursor:pointer }
 .checkbox-row input[type="checkbox"] { accent-color:var(--accent); width:16px; height:16px }
 .project-meta { font-size:12px; color:var(--text); opacity:0.7 }
+
+.window-body > button {
+    margin-top: 8px;
+    padding: 12px;
+    background-color: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    color: var(--text-h);
+    font-weight: 600;
+    transition: filter 0.15s ease;
+}
+.window-body > button:hover { filter: brightness(1.15); }
 
 /* botão de fechar no canto superior da janela de criação/edição */
 .close-button {

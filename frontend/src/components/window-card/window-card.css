@@ -23,13 +23,17 @@
     display: flex;
     flex-direction: column;
     
-    /* Defina uma largura máxima ideal para o modal não esticar na tela toda */
+    /* Largura confortável de leitura em vez de esticar quase full-screen em telas largas */
     width: 100%;
-    max-width: 80vw; /* Altere para o tamanho que achar melhor */
+    max-width: 640px;
     
     /* Remova o height: 100% para que o modal se adapte ao tamanho do conteúdo */
     height: 100%; 
     max-height: 80vh; /* Evita que o modal passe da altura da tela */
+
+    /* 🆕 Sem isso, conteúdo mais alto que 80vh simplesmente cortava em silêncio */
+    overflow-y: auto;
+    overflow-x: hidden;
     
     padding: 24px;
     backdrop-filter: blur(3px);
@@ -39,4 +43,19 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     box-sizing: border-box;
+}
+
+/* Scrollbar discreta, combinando com o tema escuro, em vez da padrão do sistema */
+.body::-webkit-scrollbar {
+    width: 8px;
+}
+.body::-webkit-scrollbar-track {
+    background: transparent;
+}
+.body::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 4px;
+}
+.body::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-border);
 }
