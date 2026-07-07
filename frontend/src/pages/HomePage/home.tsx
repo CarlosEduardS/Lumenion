@@ -257,7 +257,7 @@ export default function HomePage() {
     let folderPath: string | undefined;
     if (isNovoProjeto) {
       try {
-        folderPath = await CriarPastaDoProjeto(InputGameName, config.scriptingMode);
+        folderPath = await CriarPastaDoProjeto(InputGameName, config.scriptingMode, config.dimension);
         console.log(`📁 Pasta do projeto criada em: ${folderPath}`);
       } catch (error) {
         // Falha ao criar a pasta não deve impedir salvar o projeto — só avisa.

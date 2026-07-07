@@ -82,7 +82,7 @@ public class EngineService
     }
 
     [JSInvokable("CriarPastaDoProjeto")]
-    public static Task<string> CriarPastaDoProjeto(string nomeProjeto, string scriptingMode)
+    public static Task<string> CriarPastaDoProjeto(string nomeProjeto, string scriptingMode, string dimension)
     {
 #if WINDOWS
         // Remove caracteres inválidos pra nome de pasta (ex: : / * ? não podem
@@ -106,10 +106,31 @@ public class EngineService
             nomeSanitizado
         );
 
+        // --- Estrutura comum, presente em qualquer projeto (2D ou 3D) ---
+        // Inspirada no que Unity/Godot/Unreal/GameMaker já usam por padrão.
         Directory.CreateDirectory(pastaBase);
         Directory.CreateDirectory(Path.Combine(pastaBase, "Scripts"));
-        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets"));
         Directory.CreateDirectory(Path.Combine(pastaBase, "Scenes"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Settings"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Audio"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Fonts"));
+        Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Animations"));
+
+        if (dimension == "3D")
+        {
+            // 3D: modelos, materiais, texturas e shaders — como em Unity/Unreal/Godot
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Models"));
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Materials"));
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Textures"));
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Shaders"));
+        }
+        else
+        {
+            // 2D: sprites e tilesets — como em GameMaker/Construct/Godot (modo 2D)
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Sprites"));
+            Directory.CreateDirectory(Path.Combine(pastaBase, "Assets", "Tilesets"));
+        }
 
         return Task.FromResult(pastaBase);
 #else

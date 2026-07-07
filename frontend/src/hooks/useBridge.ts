@@ -52,15 +52,20 @@ export function useBridge() {
     };
 
     // 3. Cria a pasta base do projeto no disco (Documents/Lumenion Projects/CSharp|LumenScript/<nome>),
-    // com subpastas Scripts/Assets/Scenes já prontas. Devolve o caminho completo criado.
-    const CriarPastaDoProjeto = async (nomeProjeto: string, scriptingMode: 'csharp' | 'lumen'): Promise<string> => {
+    // com a árvore de pastas certa pro modo escolhido (2D ou 3D). Devolve o caminho completo criado.
+    const CriarPastaDoProjeto = async (
+        nomeProjeto: string,
+        scriptingMode: 'csharp' | 'lumen',
+        dimension: '2D' | '3D'
+    ): Promise<string> => {
         await aguardarDotNet();
 
         return await (window as any).DotNet.invokeMethodAsync(
             'Lumenion',
             'CriarPastaDoProjeto',
             nomeProjeto,
-            scriptingMode
+            scriptingMode,
+            dimension
         );
     };
 
