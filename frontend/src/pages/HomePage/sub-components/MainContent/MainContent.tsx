@@ -14,7 +14,9 @@ export default function MainContent({ projectsList, handleOpenCreateWindow, hand
   return (
     <div className="home-main">
       <div className="main-buttons">
-        <button onClick={handleOpenCreateWindow}>Criar</button>
+        <button onClick={handleOpenCreateWindow} id="create-project-button">
+          Criar
+        </button>
       </div>
       <div className="projects">
         {projectsList.map((project) => (

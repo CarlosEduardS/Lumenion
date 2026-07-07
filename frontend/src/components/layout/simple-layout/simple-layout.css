@@ -58,8 +58,8 @@ header {
 
 .left-bar button {
     padding: 4px;
-    border: 1px solid rgb(135, 47, 235);
-    box-shadow: 0 0 4px rgb(135, 47, 235);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 4px var(--accent);
 }
 
 .left-bar.active {
@@ -68,7 +68,7 @@ header {
     overflow: auto;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
     
-    border-top: 2px solid rgba(84, 21, 157, 0.865);
+    border-top: 3px solid var(--accent-border);
     
     margin-top: -1px; /* Faz a barra subir 1px para casar perfeitamente com a base do botão */
 }
@@ -140,6 +140,7 @@ header .home-button-group button, header #config-button-home {
     transition: all 0.3s ease;
 }
 
-button:hover {
-    filter: brightness(1.6);
+header .home-button-group .active-tab {
+    transform: translateY(5px);
+    box-shadow: 0 1px 6px var(--accent);
 }

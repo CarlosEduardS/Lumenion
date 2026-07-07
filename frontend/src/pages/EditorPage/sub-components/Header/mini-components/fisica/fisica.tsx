@@ -7,7 +7,7 @@ export default function FisicaItens() {
             isVisible={true}
             content={
                 <>
-                    <button><FaIcons.FaCog /><h5>Configurar física</h5></button>
+                    <button><FaIcons.FaCog size={24}/><h5>Configurar física</h5></button>
                 </>
             }
         />
