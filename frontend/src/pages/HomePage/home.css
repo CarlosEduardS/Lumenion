@@ -2,15 +2,15 @@
     display: flex;
     flex-direction: row;
     transform: translateY(2px);
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
 .home-button-group button.active-tab {
-    background-color: rgba(119, 0, 255, 0.35);
-    border: 1px solid rgb(135, 47, 235);
-    border-bottom: 1px solid rgba(119,0,255,0.35);
+    background-color: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    border-bottom: 1px solid var(--accent-bg);
     border-radius: 4px 4px 0 0;
-    box-shadow: 0 0 4px rgb(135, 47, 235);
+    box-shadow: 0 0 4px var(--accent-border);
     position: relative;
     z-index: 3;
     transform: translateY(4px);
