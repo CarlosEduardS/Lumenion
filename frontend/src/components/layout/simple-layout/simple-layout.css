@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--code-bg);
+    z-index: 0;
 }
 
 header {
@@ -17,7 +18,7 @@ header {
     align-items: center;
     padding: 12px 16px 1px 16px; /* 💡 Mudamos o padding inferior para 0px para colar o botão no corpo */
     background-color: transparent;
-    z-index: 2;
+    z-index: 3;
 }
 
 .layout-body {
@@ -36,7 +37,7 @@ header {
     padding: 16px;
     background-color: transparent;
     height: 100%;
-    z-index: 1;
+    z-index: 3;
     overflow: auto;
     flex-shrink: 0; /* Impede que o flexbox esmague as barras */
 }
@@ -48,7 +49,7 @@ header {
     width: 0px;
     background-color: transparent;
     height: 100%;
-    z-index: 2;
+    z-index: 3;
     overflow: hidden;
     flex-shrink: 0;
     
@@ -79,13 +80,14 @@ body:has(.resizer-horizontal:active) .left-bar {
 }
 
 .main-body {
-    margin: 4px 4px 0 4px;
+    margin: 4px 4px 12px 4px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     background-color: var(--bg);
     border-radius: 16px; 
     overflow: hidden; 
+    z-index: 2;
 }
 
 .main-window {

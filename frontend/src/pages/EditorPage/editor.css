@@ -1,0 +1,17 @@
+.footer-group-editor {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    width: 73%;
+    height: 2%;
+    background-color: transparent;
+    left: 13vw;
+    bottom: 0.3vh;
+    gap: 4px;
+}
+
+.footer-group-editor button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

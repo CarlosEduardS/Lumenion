@@ -14,13 +14,21 @@ type Props = {
   projectId?: string;
 };
 
+type ActiveGroup = 'terminal' | null;
+
 export default function EditorPage({ projectId }: Props) {
   const [project, setProject] = useState<StoredProject | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<ActiveGroup>(null);
 
-  // 📥 Carrega o projeto de verdade pelo id assim que a rota /editor/:id monta
-  // (antes, o objeto que chegava aqui era só { projectId }, não o StoredProject
-  // completo — todo mundo lá embaixo lia campos undefined em silêncio).
+  const handleTradeGroup = (group: ActiveGroup) => {
+    if (activeGroup === group) {
+      setActiveGroup(null);
+    } else {
+      setActiveGroup(group);
+    }
+  };
+
   useEffect(() => {
     if (!projectId) {
       setNotFound(true);
@@ -50,12 +58,17 @@ export default function EditorPage({ projectId }: Props) {
   }
 
   return (
+    <>
     <SimpleLayout
       HeaderContent={{ isVisible: true, content: <Header project={project} /> }}
       LeftContent={{ isVisible: true, content: <LeftContent project={project} /> }}
       RightContent={{ isVisible: true, content: <RightContent project={project} /> }}
       MainContent={{ isVisible: true, content: <MainContent project={project} /> }}
-      FooterContent={{ isVisible: true, content: <Footer project={project} /> }}
+      FooterContent={{ isVisible: !!activeGroup, content: <Footer project={project} /> }}
     />
+    <div className="footer-group-editor">
+      <button onClick={() => handleTradeGroup('terminal')}>TERMINAL</button>
+    </div>
+    </>
   )
 }

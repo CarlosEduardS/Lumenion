@@ -9,8 +9,8 @@ type Props = {
 
 export default function Footer({ project: _project }: Props) {
     return (
-        <div className="footer">
-            <FaIcons.FaTerminal /> Terminal
+        <div className='footer'>
+            <FaIcons.FaTerminal /><h5>Terminal</h5>
         </div>
     )
 }
