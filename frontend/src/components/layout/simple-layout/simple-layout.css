@@ -67,16 +67,10 @@ header {
     width: 220px;
     padding: 16px;
     overflow: auto;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
     
     border-top: 3px solid var(--accent-border);
     
     margin-top: -1px; /* Faz a barra subir 1px para casar perfeitamente com a base do botão */
-}
-
-/* 🚀 O TRUQUE: Se o usuário começar a arrastar o mouse, nós desativamos a transição na hora! */
-body:has(.resizer-horizontal:active) .left-bar {
-    transition: none !important;
 }
 
 .main-body {
@@ -140,9 +134,4 @@ header .home-button-group button, header #config-button-home {
     padding: 4px;
 
     transition: all 0.3s ease;
-}
-
-header .home-button-group .active-tab {
-    transform: translateY(5px);
-    box-shadow: 0 1px 6px var(--accent);
 }

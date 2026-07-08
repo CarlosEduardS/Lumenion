@@ -22,7 +22,7 @@ export default function LeftBar({ activeGroup, handleImportarProjeto }: Props) {
           <div className="extension-list">
             {extensions.map((extension) => (
               <div key={extension.id} className="extension-item">
-                <img src={extension.icon} alt={`${extension.name} icon`} width={10} />
+                <img src={extension.icon} alt={`${extension.name} icon`}/>
                 <p>{extension.name}</p>
               </div>
             ))}

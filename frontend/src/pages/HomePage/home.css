@@ -1,11 +1,11 @@
-.button-group {
+.home-button-group {
     display: flex;
     flex-direction: row;
-    gap: 4px;
     transform: translateY(2px);
+    margin-left: 10px;
 }
 
-.button-group button.active-tab {
+.home-button-group button.active-tab {
     background-color: rgba(119, 0, 255, 0.35);
     border: 1px solid rgb(135, 47, 235);
     border-bottom: 1px solid rgba(119,0,255,0.35);

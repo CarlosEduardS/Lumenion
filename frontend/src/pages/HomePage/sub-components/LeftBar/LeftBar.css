@@ -55,3 +55,8 @@
 }
 
 .left-bar > button:hover { filter: brightness(1.2) }
+
+.extension-list img {
+    height: 60px;
+    width: 60px;
+}
